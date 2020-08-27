@@ -21,5 +21,10 @@ namespace AutoMaster
         {
 
         }
+
+        private void Menu_FIle_Save_Click(object sender, EventArgs e)
+        {
+            saveFileDialog.ShowDialog();
+        }
     }
 }
