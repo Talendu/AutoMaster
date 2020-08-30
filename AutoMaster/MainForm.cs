@@ -243,8 +243,6 @@ namespace AutoMaster
 
             if (button.Equals(statusStrip_Com))
             {
-                statusStrip_Com.Text = "串口号: " + e.ClickedItem.Text;
-
                 if (isOpen)
                 {
                     try
@@ -255,20 +253,30 @@ namespace AutoMaster
                     catch (Exception)
                     {
                         MessageBox.Show("\r\n错误:改变端口失败!\r\n");
+                        return;
                     }
                 }
+                statusStrip_Com.Text = "串口号: " + e.ClickedItem.Text;
                 serialPort.PortName = e.ClickedItem.Text.Trim();
-                if (!isOpen)
+                statusStrip_Enable_Click(null, null);
+            }
+            else if (button.Equals(statusStrip_Baud))
+            {
+                try
                 {
-                    try
+                    string baudText;
+                    if (e.ClickedItem.Text.Trim().Equals("Custom"))
                     {
-                        serialPort.Open();
-                        isOpen = true;
+                        baudText = ((ToolStripMenuItem)e.ClickedItem).DropDownItems[0].Text;
                     }
-                    catch (Exception)
+                    else
                     {
-                        MessageBox.Show("\r\n错误:改变端口失败!\r\n");
+                        baudText = e.ClickedItem.Text;
                     }
+                    
+                    serialPort.BaudRate = Convert.ToInt32(baudText.Trim());
+                    button.Text = "波特率: " + baudText;
+                    configInNvm.baud = serialPort.BaudRate;
                 }
             }
             else if (button.Equals(statusStrip_Baud))
