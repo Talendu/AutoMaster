@@ -68,12 +68,12 @@
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip_Com = new System.Windows.Forms.ToolStripDropDownButton();
-            this.toolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
             this.statusStrip_Baud = new System.Windows.Forms.ToolStripDropDownButton();
             this.statusStrip_DataBits = new System.Windows.Forms.ToolStripDropDownButton();
             this.statusStrip_StopBit = new System.Windows.Forms.ToolStripDropDownButton();
             this.statusStrip_Parity = new System.Windows.Forms.ToolStripDropDownButton();
+            this.statusStrip_Enable = new System.Windows.Forms.ToolStripDropDownButton();
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
@@ -113,7 +113,7 @@
             this.Menu_FIle_Save.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.Menu_FIle_Save.Size = new System.Drawing.Size(147, 22);
             this.Menu_FIle_Save.Text = "保存";
-            this.Menu_FIle_Save.Click += new System.EventHandler(this.Menu_FIle_Save_Click);
+            this.Menu_FIle_Save.Click += new System.EventHandler(this.Menu_File_Save_Click);
             // 
             // Menu_FIle_Open
             // 
@@ -121,7 +121,7 @@
             this.Menu_FIle_Open.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.O)));
             this.Menu_FIle_Open.Size = new System.Drawing.Size(147, 22);
             this.Menu_FIle_Open.Text = "打开";
-            this.Menu_FIle_Open.Click += new System.EventHandler(this.Menu_FIle_Open_Click);
+            this.Menu_FIle_Open.Click += new System.EventHandler(this.Menu_File_Open_Click);
             // 
             // Menu_Setting
             // 
@@ -170,7 +170,7 @@
             this.tabControl1.Location = new System.Drawing.Point(12, 28);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(760, 408);
+            this.tabControl1.Size = new System.Drawing.Size(760, 485);
             this.tabControl1.TabIndex = 1;
             // 
             // tabPageCom
@@ -180,7 +180,7 @@
             this.tabPageCom.Location = new System.Drawing.Point(4, 22);
             this.tabPageCom.Name = "tabPageCom";
             this.tabPageCom.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageCom.Size = new System.Drawing.Size(752, 382);
+            this.tabPageCom.Size = new System.Drawing.Size(752, 459);
             this.tabPageCom.TabIndex = 0;
             this.tabPageCom.Text = "通讯";
             this.tabPageCom.UseVisualStyleBackColor = true;
@@ -197,7 +197,7 @@
             this.GBoxSendData.Controls.Add(this.checkBoxSendHex);
             this.GBoxSendData.Controls.Add(this.checkBoxSendRegular);
             this.GBoxSendData.Controls.Add(this.LabelCycle);
-            this.GBoxSendData.Location = new System.Drawing.Point(4, 263);
+            this.GBoxSendData.Location = new System.Drawing.Point(4, 340);
             this.GBoxSendData.Name = "GBoxSendData";
             this.GBoxSendData.Size = new System.Drawing.Size(742, 113);
             this.GBoxSendData.TabIndex = 2;
@@ -262,6 +262,7 @@
             this.checkBoxSendNewLine.TabIndex = 31;
             this.checkBoxSendNewLine.Text = "发送新行";
             this.checkBoxSendNewLine.UseVisualStyleBackColor = true;
+            this.checkBoxSendNewLine.CheckedChanged += new System.EventHandler(this.checkBox_CheckedChanged);
             // 
             // checkBoxSendHex
             // 
@@ -273,6 +274,7 @@
             this.checkBoxSendHex.TabIndex = 30;
             this.checkBoxSendHex.Text = "Hex发送";
             this.checkBoxSendHex.UseVisualStyleBackColor = true;
+            this.checkBoxSendHex.CheckedChanged += new System.EventHandler(this.checkBox_CheckedChanged);
             // 
             // checkBoxSendRegular
             // 
@@ -313,7 +315,7 @@
             this.GBoxMessageView.Controls.Add(this.LabelSendCount);
             this.GBoxMessageView.Location = new System.Drawing.Point(6, 6);
             this.GBoxMessageView.Name = "GBoxMessageView";
-            this.GBoxMessageView.Size = new System.Drawing.Size(740, 251);
+            this.GBoxMessageView.Size = new System.Drawing.Size(740, 328);
             this.GBoxMessageView.TabIndex = 1;
             this.GBoxMessageView.TabStop = false;
             this.GBoxMessageView.Text = "数据显示";
@@ -321,7 +323,7 @@
             // btnClearData
             // 
             this.btnClearData.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearData.Location = new System.Drawing.Point(659, 216);
+            this.btnClearData.Location = new System.Drawing.Point(659, 293);
             this.btnClearData.Name = "btnClearData";
             this.btnClearData.Size = new System.Drawing.Size(75, 28);
             this.btnClearData.TabIndex = 0;
@@ -335,23 +337,25 @@
             this.checkBoxShowSend.AutoSize = true;
             this.checkBoxShowSend.Checked = true;
             this.checkBoxShowSend.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxShowSend.Location = new System.Drawing.Point(156, 223);
+            this.checkBoxShowSend.Location = new System.Drawing.Point(156, 300);
             this.checkBoxShowSend.Name = "checkBoxShowSend";
             this.checkBoxShowSend.Size = new System.Drawing.Size(72, 16);
             this.checkBoxShowSend.TabIndex = 31;
             this.checkBoxShowSend.Text = "显示发送";
             this.checkBoxShowSend.UseVisualStyleBackColor = true;
+            this.checkBoxShowSend.CheckedChanged += new System.EventHandler(this.checkBox_CheckedChanged);
             // 
             // checkBoxAutoNewLine
             // 
             this.checkBoxAutoNewLine.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxAutoNewLine.AutoSize = true;
-            this.checkBoxAutoNewLine.Location = new System.Drawing.Point(78, 223);
+            this.checkBoxAutoNewLine.Location = new System.Drawing.Point(78, 300);
             this.checkBoxAutoNewLine.Name = "checkBoxAutoNewLine";
             this.checkBoxAutoNewLine.Size = new System.Drawing.Size(72, 16);
             this.checkBoxAutoNewLine.TabIndex = 30;
             this.checkBoxAutoNewLine.Text = "自动换行";
             this.checkBoxAutoNewLine.UseVisualStyleBackColor = true;
+            this.checkBoxAutoNewLine.CheckedChanged += new System.EventHandler(this.checkBox_CheckedChanged);
             // 
             // tbxData
             // 
@@ -364,7 +368,7 @@
             this.tbxData.Name = "tbxData";
             this.tbxData.ReadOnly = true;
             this.tbxData.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.tbxData.Size = new System.Drawing.Size(728, 190);
+            this.tbxData.Size = new System.Drawing.Size(728, 267);
             this.tbxData.TabIndex = 29;
             this.tbxData.Text = "";
             // 
@@ -372,18 +376,19 @@
             // 
             this.checkBoxShowInHex.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxShowInHex.AutoSize = true;
-            this.checkBoxShowInHex.Location = new System.Drawing.Point(6, 223);
+            this.checkBoxShowInHex.Location = new System.Drawing.Point(6, 300);
             this.checkBoxShowInHex.Name = "checkBoxShowInHex";
             this.checkBoxShowInHex.Size = new System.Drawing.Size(66, 16);
             this.checkBoxShowInHex.TabIndex = 28;
             this.checkBoxShowInHex.Text = "Hex显示";
             this.checkBoxShowInHex.UseVisualStyleBackColor = true;
+            this.checkBoxShowInHex.CheckedChanged += new System.EventHandler(this.checkBox_CheckedChanged);
             // 
             // tbxReceiveCount
             // 
             this.tbxReceiveCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.tbxReceiveCount.CausesValidation = false;
-            this.tbxReceiveCount.Location = new System.Drawing.Point(358, 221);
+            this.tbxReceiveCount.Location = new System.Drawing.Point(358, 298);
             this.tbxReceiveCount.Name = "tbxReceiveCount";
             this.tbxReceiveCount.ReadOnly = true;
             this.tbxReceiveCount.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -395,7 +400,7 @@
             this.LabelReceiveCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.LabelReceiveCount.AutoSize = true;
             this.LabelReceiveCount.ForeColor = System.Drawing.Color.Blue;
-            this.LabelReceiveCount.Location = new System.Drawing.Point(323, 224);
+            this.LabelReceiveCount.Location = new System.Drawing.Point(323, 301);
             this.LabelReceiveCount.Name = "LabelReceiveCount";
             this.LabelReceiveCount.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.LabelReceiveCount.Size = new System.Drawing.Size(29, 12);
@@ -406,7 +411,7 @@
             // 
             this.tbxSendCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.tbxSendCount.CausesValidation = false;
-            this.tbxSendCount.Location = new System.Drawing.Point(269, 221);
+            this.tbxSendCount.Location = new System.Drawing.Point(269, 298);
             this.tbxSendCount.Name = "tbxSendCount";
             this.tbxSendCount.ReadOnly = true;
             this.tbxSendCount.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -418,7 +423,7 @@
             this.LabelSendCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.LabelSendCount.AutoSize = true;
             this.LabelSendCount.ForeColor = System.Drawing.Color.OrangeRed;
-            this.LabelSendCount.Location = new System.Drawing.Point(234, 224);
+            this.LabelSendCount.Location = new System.Drawing.Point(234, 301);
             this.LabelSendCount.Name = "LabelSendCount";
             this.LabelSendCount.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.LabelSendCount.Size = new System.Drawing.Size(29, 12);
@@ -431,7 +436,7 @@
             this.tabPageParamShow.Location = new System.Drawing.Point(4, 22);
             this.tabPageParamShow.Name = "tabPageParamShow";
             this.tabPageParamShow.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageParamShow.Size = new System.Drawing.Size(752, 382);
+            this.tabPageParamShow.Size = new System.Drawing.Size(752, 459);
             this.tabPageParamShow.TabIndex = 1;
             this.tabPageParamShow.Text = "参数显示";
             this.tabPageParamShow.UseVisualStyleBackColor = true;
@@ -446,9 +451,11 @@
             this.columnHeader2,
             this.columnHeader3,
             this.columnHeader4});
+            this.listView_State.FullRowSelect = true;
+            this.listView_State.GridLines = true;
             this.listView_State.Location = new System.Drawing.Point(6, 6);
             this.listView_State.Name = "listView_State";
-            this.listView_State.Size = new System.Drawing.Size(740, 370);
+            this.listView_State.Size = new System.Drawing.Size(740, 447);
             this.listView_State.TabIndex = 0;
             this.listView_State.UseCompatibleStateImageBehavior = false;
             this.listView_State.View = System.Windows.Forms.View.Details;
@@ -481,8 +488,9 @@
             this.statusStrip_Baud,
             this.statusStrip_DataBits,
             this.statusStrip_StopBit,
-            this.statusStrip_Parity});
-            this.statusStrip.Location = new System.Drawing.Point(0, 439);
+            this.statusStrip_Parity,
+            this.statusStrip_Enable});
+            this.statusStrip.Location = new System.Drawing.Point(0, 516);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(784, 23);
             this.statusStrip.TabIndex = 2;
@@ -491,8 +499,6 @@
             // statusStrip_Com
             // 
             this.statusStrip_Com.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.statusStrip_Com.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripMenuItem1});
             this.statusStrip_Com.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.statusStrip_Com.Name = "statusStrip_Com";
             this.statusStrip_Com.Size = new System.Drawing.Size(64, 21);
@@ -500,12 +506,6 @@
             this.statusStrip_Com.ToolTipText = "串口号";
             this.statusStrip_Com.DropDownOpening += new System.EventHandler(this.statusStrip_Com_DropDownOpening);
             this.statusStrip_Com.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.statusStrip_DropDownItemClicked);
-            // 
-            // toolStripMenuItem1
-            // 
-            this.toolStripMenuItem1.Name = "toolStripMenuItem1";
-            this.toolStripMenuItem1.Size = new System.Drawing.Size(192, 22);
-            this.toolStripMenuItem1.Text = "toolStripMenuItem1";
             // 
             // toolStripStatusLabel3
             // 
@@ -558,6 +558,22 @@
             this.statusStrip_Parity.ToolTipText = "校验位";
             this.statusStrip_Parity.DropDownItemClicked += new System.Windows.Forms.ToolStripItemClickedEventHandler(this.statusStrip_DropDownItemClicked);
             // 
+            // statusStrip_Enable
+            // 
+            this.statusStrip_Enable.ForeColor = System.Drawing.Color.Red;
+            this.statusStrip_Enable.Image = global::AutoMaster.Properties.Resources.off;
+            this.statusStrip_Enable.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.statusStrip_Enable.Name = "statusStrip_Enable";
+            this.statusStrip_Enable.ShowDropDownArrow = false;
+            this.statusStrip_Enable.Size = new System.Drawing.Size(52, 21);
+            this.statusStrip_Enable.Text = "关闭";
+            this.statusStrip_Enable.ToolTipText = "关闭串口";
+            this.statusStrip_Enable.Click += new System.EventHandler(this.statusStrip_Enable_Click);
+            // 
+            // saveFileDialog
+            // 
+            this.saveFileDialog.Filter = "log files|*.log|All files|*.*";
+            // 
             // openFileDialog
             // 
             this.openFileDialog.FileName = "*.log";
@@ -567,13 +583,14 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 462);
+            this.ClientSize = new System.Drawing.Size(784, 539);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.menuStrip);
             this.MainMenuStrip = this.menuStrip;
             this.Name = "MainForm";
-            this.Text = "MainFram";
+            this.Text = "AutoMaster";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
             this.Load += new System.EventHandler(this.MainForm_Load);
             this.menuStrip.ResumeLayout(false);
             this.menuStrip.PerformLayout();
@@ -629,7 +646,6 @@
         private System.Windows.Forms.ColumnHeader columnHeader2;
         private System.Windows.Forms.ColumnHeader columnHeader3;
         private System.Windows.Forms.ColumnHeader columnHeader4;
-        private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.Button btnClearSend;
         private System.Windows.Forms.Button btnSend;
         private System.Windows.Forms.SaveFileDialog saveFileDialog;
@@ -639,7 +655,8 @@
         private System.Windows.Forms.ToolStripDropDownButton statusStrip_DataBits;
         private System.Windows.Forms.ToolStripDropDownButton statusStrip_StopBit;
         private System.Windows.Forms.ToolStripDropDownButton statusStrip_Parity;
-        private System.Windows.Forms.ToolStripMenuItem toolStripMenuItem1;
+        private System.Windows.Forms.ToolStripDropDownButton statusStrip_Enable;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
     }
 }
 

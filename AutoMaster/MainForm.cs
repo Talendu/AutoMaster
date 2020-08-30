@@ -12,6 +12,7 @@ using Microsoft.Win32;
 using System.Collections;
 using EnumsNET;
 using System.Threading;
+using System.Configuration;
 
 namespace AutoMaster
 {
@@ -20,8 +21,10 @@ namespace AutoMaster
         private bool isOpen = false;
         private int TransmissionCount = 0;
         private int ReceiveCount = 0;
-        int RegularCycle = 10;
 
+        ConfigInfo.ConfigInNvm configInNvm;
+
+        List<ParamList.ParamItem> paramList;
         Thread RegularSendThread = null;
 
         public MainForm()
@@ -31,13 +34,40 @@ namespace AutoMaster
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            try
+            {
+                configInNvm = ConfigInfo.GetNvmConfig();
+                checkBoxShowInHex.Checked = configInNvm.showInHex;
+                checkBoxAutoNewLine.Checked = configInNvm.autoNewLine;
+                checkBoxShowInHex.Checked = configInNvm.showSend;
+                checkBoxShowInHex.Checked = configInNvm.sendInHex;
+                checkBoxShowInHex.Checked = configInNvm.sendNewLine;
+                serialPort.BaudRate = configInNvm.baud;
+                serialPort.DataBits = configInNvm.dataBits;
+                serialPort.StopBits = configInNvm.stopBits;
+                serialPort.Parity = configInNvm.parity;
+            }
+            catch(Exception)
+            {
+                MessageBox.Show("文件信息缺失，读取信息失败，请重装软件", "错误");
+            }
             StatusStrip_Init();
-            tbxCycle.Text = RegularCycle.ToString();
+            tbxCycle.Text = configInNvm.period.ToString();
 
             serialPort.ReadTimeout = 1000000 / serialPort.BaudRate;
 
-            serialPort.DataReceived += new SerialDataReceivedEventHandler(serialDataReceive);
+            paramList = ParamList.ParamList_Init();
+            foreach (ParamList.ParamItem item in paramList)
+            {
+                ListViewItem listItem = new ListViewItem();
+                listItem.Text = item.id.ToString();
+                listItem.SubItems.Add(new ListViewItem.ListViewSubItem().Text = item.name);
+                listItem.SubItems.Add(new ListViewItem.ListViewSubItem().Text = item.value);
+                listItem.SubItems.Add(new ListViewItem.ListViewSubItem().Text = item.unit);
+                listView_State.Items.Add(listItem);
+            }
 
+            serialPort.DataReceived += new SerialDataReceivedEventHandler(serialDataReceive);
         }
 
         private void serialDataReceive(object sender, SerialDataReceivedEventArgs e)
@@ -106,6 +136,7 @@ namespace AutoMaster
                     ShowMessage(msg);
                 }
             }
+            GC.Collect(1, GCCollectionMode.Forced);
         }
 
         private void ShowBytes(byte[] buff, int type)
@@ -182,18 +213,16 @@ namespace AutoMaster
                             tbxData.ScrollToCaret();
                             break;
                         }
+                    case 4:
+                        {
+                            tbxData.SelectionStart = tbxData.Text.Length;
+                            tbxData.SelectionColor = Color.Black;
+                            tbxData.AppendText((string)message.GetObj());
+                            break;
+                        }
                 }
             }));
-        }
-
-        private void Menu_FIle_Save_Click(object sender, EventArgs e)
-        {
-            saveFileDialog.ShowDialog();
-        }
-
-        private void Menu_FIle_Open_Click(object sender, EventArgs e)
-        {
-            openFileDialog.ShowDialog();
+            GC.Collect();
         }
 
         private void statusStrip_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -246,8 +275,19 @@ namespace AutoMaster
             {
                 try
                 {
-                    serialPort.BaudRate = Convert.ToInt32(e.ClickedItem.Text.Trim());
-                    button.Text = "波特率: " + e.ClickedItem.Text;
+                    string baudText;
+                    if (e.ClickedItem.Text.Trim().Equals("Custom"))
+                    {
+                        baudText = ((ToolStripMenuItem)e.ClickedItem).DropDownItems[0].Text;
+                    }
+                    else
+                    {
+                        baudText = e.ClickedItem.Text;
+                    }
+                    
+                    serialPort.BaudRate = Convert.ToInt32(baudText.Trim());
+                    button.Text = "波特率: " + baudText;
+                    configInNvm.baud = serialPort.BaudRate;
                 }
                 catch (Exception)
                 {
@@ -260,6 +300,7 @@ namespace AutoMaster
                 {
                     serialPort.DataBits = Convert.ToInt32(e.ClickedItem.Text.Trim());
                     button.Text = "数据位: " + e.ClickedItem.Text;
+                    configInNvm.dataBits = serialPort.DataBits;
                 }
                 catch (Exception)
                 {
@@ -275,6 +316,7 @@ namespace AutoMaster
                         if (stopBits.ToString().Equals(e.ClickedItem.Text.Trim()))
                         {
                             serialPort.StopBits = stopBits.Value;
+                            configInNvm.stopBits = serialPort.StopBits;
                         }
                     }
                     button.Text = "停止位: " + e.ClickedItem.Text;
@@ -293,6 +335,7 @@ namespace AutoMaster
                         if (parity.ToString().Equals(e.ClickedItem.Text.Trim()))
                         {
                             serialPort.Parity = parity.Value;
+                            configInNvm.parity = serialPort.Parity;
                         }
                     }
                     button.Text = "校验位: " + e.ClickedItem.Text;
@@ -335,6 +378,13 @@ namespace AutoMaster
             {
                 stripTextBox = new ToolStripMenuItem();
                 stripTextBox.Text = item;
+                if (item.Equals("Custom"))
+                {
+                    ToolStripTextBox textBox = new ToolStripTextBox();
+                    textBox.Name = "CustomBaud";
+                    textBox.TextChanged += new EventHandler(textChanged);
+                    stripTextBox.DropDownItems.Add(textBox);
+                }
                 statusStrip_Baud.DropDownItems.Add(stripTextBox);
             }
             statusStrip_Baud.Text = "波特率: " + serialPort.BaudRate;
@@ -365,7 +415,9 @@ namespace AutoMaster
             }
             statusStrip_Parity.Text = "校验位: " + serialPort.Parity;
         }
-        
+        private void textChanged(object sender, EventArgs e)
+        {
+        }
         private void statusStrip_Com_DropDownOpening(object sender, EventArgs e)
         {
             statusStrip_Com.DropDownItems.Clear();
@@ -379,6 +431,7 @@ namespace AutoMaster
             ReceiveCount = 0;
             tbxSendCount.Text = "0";
             tbxReceiveCount.Text = "0";
+            GC.Collect();
         }
 
         private void btnClearSend_Click(object sender, EventArgs e)
@@ -390,7 +443,7 @@ namespace AutoMaster
         {
             if (isOpen == false)
             {
-                //btnOpenCom_Click(null, null);
+                statusStrip_Enable_Click(null, null);
             }
             serialDataTransmission(tbxSend.Text);
         }
@@ -481,7 +534,7 @@ namespace AutoMaster
                 {
                     try
                     {
-                        Thread.Sleep(RegularCycle);
+                        Thread.Sleep(configInNvm.period);
                     }
                     catch (Exception)
                     {
@@ -490,6 +543,16 @@ namespace AutoMaster
                 } while (serialPort.BytesToWrite > 0);
             }
         }
+
+        private void checkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            configInNvm.showInHex = checkBoxShowInHex.Checked;
+            configInNvm.autoNewLine = checkBoxAutoNewLine.Checked;
+            configInNvm.showSend = checkBoxShowSend.Checked;
+            configInNvm.sendInHex = checkBoxSendHex.Checked;
+            configInNvm.sendNewLine = checkBoxSendNewLine.Checked;
+        }
+
         private void checkBoxSendRegular_CheckedChanged(object sender, EventArgs e)
         {
             if (checkBoxSendRegular.CheckState == CheckState.Checked)
@@ -515,9 +578,100 @@ namespace AutoMaster
             }
         }
 
-        private void Menu_FIle_Save_Click(object sender, EventArgs e)
+        private void Menu_File_Save_Click(object sender, EventArgs e)
         {
-            saveFileDialog.ShowDialog();
+            if (tbxData.Text == null
+                || tbxData.Text.Equals(""))
+            {
+                MessageBox.Show("内容为空");
+                return;
+            }
+            saveFileDialog.FileName = DateTime.Now.ToString("yyyy-MM-dd_hh.mm.ss ");
+            if (saveFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string fileName = saveFileDialog.FileName;
+                System.IO.File.WriteAllText(fileName, tbxData.Text);
+            }
+        }
+
+        private void Menu_File_Open_Click(object sender, EventArgs e)
+        {
+            if (tbxData.Text != null
+                && !tbxData.Text.Equals("")
+                && MessageBox.Show("窗口中消息不为空, 打开文件将覆盖窗口中的内容\n是否继续", "注意",
+                    MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) != DialogResult.OK)
+            {
+                return;
+            }
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                string fileName = openFileDialog.FileName;/*
+                System.IO.FileInfo fileInfo = null;
+                try
+                {
+                    fileInfo = new System.IO.FileInfo(fileName);
+                    if (fileInfo.Length > 2048000)
+                    {
+                        MessageBox.Show("无法打开超过2M的文件", "注意",MessageBoxButtons.OK,
+                            MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+                catch (Exception)
+                {
+                }*/
+
+                string fileData = Encoding.Default.GetString(System.IO.File.ReadAllBytes(fileName));
+                //string fileData = System.IO.File.ReadAllText(fileName);
+                MyMessage msg = new MyMessage(4);
+                btnClearData_Click(null, null);
+                msg.SetObj(fileData);
+                ShowMessage(msg);
+            }
+        }
+
+        private void statusStrip_Enable_Click(object sender, EventArgs e)
+        {
+            if (isOpen)
+            {
+                try
+                {
+                    serialPort.Close();
+                    statusStrip_Enable.Image = Properties.Resources.off;
+                    statusStrip_Enable.Text = "关闭";
+                    statusStrip_Enable.ForeColor = Color.Red;
+                    isOpen = false;
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("关闭串口失败");
+                }
+            }
+            else
+            {
+                try
+                {
+                    serialPort.Open();
+                    statusStrip_Enable.Image = Properties.Resources.on;
+                    statusStrip_Enable.Text = "开启";
+                    statusStrip_Enable.ForeColor = Color.Green;
+                    isOpen = true;
+                }
+                catch (Exception)
+                {
+                    MessageBox.Show("打开串口失败");
+                }
+            }
+        }
+
+        private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                ConfigInfo.SaveConfigToNvm(configInNvm);
+            }
+            catch (Exception)
+            { }
         }
     }
 }
