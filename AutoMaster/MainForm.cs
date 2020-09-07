@@ -70,10 +70,14 @@ namespace AutoMaster
             serialPort.DataReceived += new SerialDataReceivedEventHandler(serialDataReceive);
         }
 
+        ArrayList rxBuffer = new ArrayList();
+
         private void serialDataReceive(object sender, SerialDataReceivedEventArgs e)
         {
             byte[] buff = new byte[serialPort.BytesToRead];
             serialPort.Read(buff, 0, buff.Length);
+            rxBuffer.AddRange(buff);
+            listView_State_Update(ParamList.ParamList_Update(paramList, rxBuffer));
             ReceiveCount += buff.Length;
             if (checkBoxShowInHex.CheckState == CheckState.Checked)
             {
@@ -84,7 +88,20 @@ namespace AutoMaster
                 ShowBytes(buff, 1);
             }
         }
+        private void listView_State_Update(List<ParamList.ParamItem> list)
+        {
 
+            foreach (ParamList.ParamItem item in list)
+            {
+                ListViewItem listItem = new ListViewItem();
+                listItem.Text = item.id.ToString();
+                listItem.SubItems.Add(new ListViewItem.ListViewSubItem().Text = item.name);
+                listItem.SubItems.Add(new ListViewItem.ListViewSubItem().Text = item.value);
+                listItem.SubItems.Add(new ListViewItem.ListViewSubItem().Text = item.unit);
+                listView_State.Items.RemoveAt(item.id);
+                listView_State.Items.Insert(item.id, listItem);
+            }
+        }
         private void serialDataTransmission(string data)
         {
             if (isOpen == false)
@@ -673,6 +690,12 @@ namespace AutoMaster
                 MessageBox.Show(fontDialog.Font.ToString());
             }
 
+        }
+        byte test = 0;
+        private void Menu_VIew_Page_Click(object sender, EventArgs e)
+        {
+            rxBuffer.AddRange(new byte[]{ 0x5a, test++, 0, 2, 0x5a, 0xa5, 0, Convert.ToByte('\n')});
+            listView_State_Update(ParamList.ParamList_Update(paramList, rxBuffer));
         }
     }
 }

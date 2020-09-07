@@ -135,7 +135,7 @@
             // Menu_Setting_Font
             // 
             this.Menu_Setting_Font.Name = "Menu_Setting_Font";
-            this.Menu_Setting_Font.Size = new System.Drawing.Size(152, 22);
+            this.Menu_Setting_Font.Size = new System.Drawing.Size(100, 22);
             this.Menu_Setting_Font.Text = "字体";
             this.Menu_Setting_Font.Click += new System.EventHandler(this.Menu_Setting_Font_Click);
             // 
@@ -151,8 +151,9 @@
             // Menu_VIew_Page
             // 
             this.Menu_VIew_Page.Name = "Menu_VIew_Page";
-            this.Menu_VIew_Page.Size = new System.Drawing.Size(124, 22);
+            this.Menu_VIew_Page.Size = new System.Drawing.Size(152, 22);
             this.Menu_VIew_Page.Text = "分页";
+            this.Menu_VIew_Page.Click += new System.EventHandler(this.Menu_VIew_Page_Click);
             // 
             // Menu_View_Vertical
             // 
@@ -470,7 +471,7 @@
             // columnHeader2
             // 
             this.columnHeader2.Text = "参数";
-            this.columnHeader2.Width = 62;
+            this.columnHeader2.Width = 255;
             // 
             // columnHeader3
             // 

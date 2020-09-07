@@ -47,13 +47,17 @@ namespace AutoMaster
                 this.value = "";
             }
         }
-        struct FRAME
+        class FRAME
         {
             public byte head;
             public UInt16 id;
             public byte data_type;
             public byte[] data;
             public byte crc;
+            public FRAME()
+            {
+                data = new byte[2];
+            }
         }
         public static List<ParamItem> ParamList_Init()
         {
@@ -173,27 +177,67 @@ namespace AutoMaster
         {
             return 0;
         }
-        public static List<ParamItem> ParamList_Update(List<ParamItem> list, byte[] stream)
+        static int find(byte[] array, int start, int end, byte value)
+        {
+            int i = 0;
+            if (end >= array.Length)
+            {
+                end = array.Length - 1;
+            }
+            if (start > end || start < 0)
+            {
+                return -1;
+            }
+            for (i = start; i <= end; i++)
+            {
+                if (value == array[i])
+                {
+                    return i;
+                }
+            }
+            return -1;
+        }
+        public static List<ParamItem> ParamList_Update(List<ParamItem> list, ArrayList rxBuffer)
         {
             FRAME frame = new FRAME();
-            int index = 0;
-            if (stream.Length < 6)
-                return list;
-            frame.head = stream[index];
-            frame.data_type = stream[index+3];
-            if (frame.data_type == 2)
+            List<ParamItem> outList = new List<ParamItem>();
+            byte[] stream;
+            int index = 0, end;
+            for (;;)
             {
-                frame.crc = stream[index + 6];
-                if (calculate_crc(stream.Skip(1).Take(5).ToArray(), 5) == frame.crc)
+                stream = (byte[])rxBuffer.ToArray(typeof(byte));
+                index = find(stream, 0, rxBuffer.Count, 0x5a);
+                if (index < 0)
                 {
-                    frame.id = (UInt16)(256 * stream[index + 1] + stream[index + 2]);
-                    frame.data[0] = stream[index + 4];
-                    frame.data[1] = stream[index + 5];
-                    list[frame.id].value = Convert.ToUInt16(frame.data).ToString();
+                    rxBuffer.Clear();
+                    break;
+                }
+                end = find(stream, index + 6, rxBuffer.Count, Convert.ToByte('\n'));
+                if (end < 0)
+                {
+                    rxBuffer.Clear();
+                    break;
+                }
+                rxBuffer.RemoveRange(0, end+1);
+                if (end - index < 6)
+                    continue;
+                frame.head = stream[index];
+                frame.data_type = stream[index + 3];
+                if (frame.data_type == 2)
+                {
+                    frame.crc = stream[index + 6];
+                    if (calculate_crc(stream.Skip(1).Take(5).ToArray(), 5) == frame.crc)
+                    {
+                        frame.id = (UInt16)(256 * stream[index + 2] + stream[index + 1]);
+                        frame.data[0] = stream[index + 4];
+                        frame.data[1] = stream[index + 5];
+                        list[frame.id].value = (Convert.ToUInt16(frame.data[1]) << 8 + frame.data[0]).ToString();
+                        outList.Add(list[frame.id]);
+                    }
                 }
             }
 
-            return list;
+            return outList;
         }
     }
 }
