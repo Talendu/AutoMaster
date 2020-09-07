@@ -691,11 +691,15 @@ namespace AutoMaster
             }
 
         }
-        byte test = 0;
         private void Menu_VIew_Page_Click(object sender, EventArgs e)
         {
-            rxBuffer.AddRange(new byte[]{ 0x5a, test++, 0, 2, 0x5a, 0xa5, 0, Convert.ToByte('\n')});
-            listView_State_Update(ParamList.ParamList_Update(paramList, rxBuffer));
+            for (byte i = 0; i < paramList.Count; i++)
+            {
+                UInt16 value = 32767;
+                rxBuffer.AddRange(new byte[] { 0x5a, i, 0, 2, Convert.ToByte(value&0xff),
+                    Convert.ToByte(value >> 8), 0, Convert.ToByte('\n') });
+                listView_State_Update(ParamList.ParamList_Update(paramList, rxBuffer));
+            }
         }
     }
 }

@@ -21,6 +21,7 @@ namespace AutoMaster
                 this.id = id;
                 this.name = name;
                 this.value = value;
+                this.formula = formula;
                 this.unit = unit;
             }
             public ParamItem (int id, string name, string value, string unit)
@@ -231,7 +232,23 @@ namespace AutoMaster
                         frame.id = (UInt16)(256 * stream[index + 2] + stream[index + 1]);
                         frame.data[0] = stream[index + 4];
                         frame.data[1] = stream[index + 5];
-                        list[frame.id].value = (Convert.ToUInt16(frame.data[1]) << 8 + frame.data[0]).ToString();
+                        if (list[frame.id].formula != null &&
+                            list[frame.id].formula.Length > 0 &&
+                            list[frame.id].formula.Substring(0, 1).Equals("/"))
+                        {
+                            double value = Convert.ToDouble(frame.data[1]) * 256.0 + Convert.ToDouble(frame.data[0]);
+                            string formula = list[frame.id].formula.Substring(1);
+                            value = value / Convert.ToDouble(formula);
+                            string str_value = value.ToString("f6");
+                            if (!str_value.Equals(list[frame.id].value))
+                            {
+                                list[frame.id].value = str_value;
+                            }
+                        }
+                        else
+                        {
+                            list[frame.id].value = ((Convert.ToUInt16(frame.data[1]) << 8 )+ frame.data[0]).ToString();
+                        }
                         outList.Add(list[frame.id]);
                     }
                 }
