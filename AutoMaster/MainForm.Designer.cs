@@ -35,7 +35,7 @@
             this.Menu_FIle_Save = new System.Windows.Forms.ToolStripMenuItem();
             this.Menu_FIle_Open = new System.Windows.Forms.ToolStripMenuItem();
             this.Menu_Setting = new System.Windows.Forms.ToolStripMenuItem();
-            this.Menu_Setting_Com = new System.Windows.Forms.ToolStripMenuItem();
+            this.Menu_Setting_Font = new System.Windows.Forms.ToolStripMenuItem();
             this.Menu_View = new System.Windows.Forms.ToolStripMenuItem();
             this.Menu_VIew_Page = new System.Windows.Forms.ToolStripMenuItem();
             this.Menu_View_Vertical = new System.Windows.Forms.ToolStripMenuItem();
@@ -77,6 +77,7 @@
             this.saveFileDialog = new System.Windows.Forms.SaveFileDialog();
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
+            this.fontDialog = new System.Windows.Forms.FontDialog();
             this.menuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageCom.SuspendLayout();
@@ -126,16 +127,17 @@
             // Menu_Setting
             // 
             this.Menu_Setting.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.Menu_Setting_Com});
+            this.Menu_Setting_Font});
             this.Menu_Setting.Name = "Menu_Setting";
             this.Menu_Setting.Size = new System.Drawing.Size(44, 21);
             this.Menu_Setting.Text = "设置";
             // 
-            // Menu_Setting_Com
+            // Menu_Setting_Font
             // 
-            this.Menu_Setting_Com.Name = "Menu_Setting_Com";
-            this.Menu_Setting_Com.Size = new System.Drawing.Size(124, 22);
-            this.Menu_Setting_Com.Text = "串口配置";
+            this.Menu_Setting_Font.Name = "Menu_Setting_Font";
+            this.Menu_Setting_Font.Size = new System.Drawing.Size(152, 22);
+            this.Menu_Setting_Font.Text = "字体";
+            this.Menu_Setting_Font.Click += new System.EventHandler(this.Menu_Setting_Font_Click);
             // 
             // Menu_View
             // 
@@ -615,7 +617,7 @@
         private System.Windows.Forms.ToolStripMenuItem Menu_FIle_Save;
         private System.Windows.Forms.ToolStripMenuItem Menu_Setting;
         private System.Windows.Forms.ToolStripMenuItem Menu_FIle_Open;
-        private System.Windows.Forms.ToolStripMenuItem Menu_Setting_Com;
+        private System.Windows.Forms.ToolStripMenuItem Menu_Setting_Font;
         private System.Windows.Forms.ToolStripMenuItem Menu_View;
         private System.Windows.Forms.ToolStripMenuItem Menu_VIew_Page;
         private System.Windows.Forms.ToolStripMenuItem Menu_View_Vertical;
@@ -657,6 +659,7 @@
         private System.Windows.Forms.ToolStripDropDownButton statusStrip_Parity;
         private System.Windows.Forms.ToolStripDropDownButton statusStrip_Enable;
         private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.FontDialog fontDialog;
     }
 }
 

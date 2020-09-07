@@ -278,25 +278,6 @@ namespace AutoMaster
                     button.Text = "波特率: " + baudText;
                     configInNvm.baud = serialPort.BaudRate;
                 }
-            }
-            else if (button.Equals(statusStrip_Baud))
-            {
-                try
-                {
-                    string baudText;
-                    if (e.ClickedItem.Text.Trim().Equals("Custom"))
-                    {
-                        baudText = ((ToolStripMenuItem)e.ClickedItem).DropDownItems[0].Text;
-                    }
-                    else
-                    {
-                        baudText = e.ClickedItem.Text;
-                    }
-                    
-                    serialPort.BaudRate = Convert.ToInt32(baudText.Trim());
-                    button.Text = "波特率: " + baudText;
-                    configInNvm.baud = serialPort.BaudRate;
-                }
                 catch (Exception)
                 {
                     MessageBox.Show("\r\n错误:非法波特率!\r\n");
@@ -680,6 +661,18 @@ namespace AutoMaster
             }
             catch (Exception)
             { }
+        }
+
+        private void Menu_Setting_Font_Click(object sender, EventArgs e)
+        {
+            if (fontDialog.ShowDialog() == DialogResult.OK)
+            {
+                tbxData.Font = fontDialog.Font;
+                tbxSend.Font = fontDialog.Font;
+                listView_State.Font = fontDialog.Font;
+                MessageBox.Show(fontDialog.Font.ToString());
+            }
+
         }
     }
 }
