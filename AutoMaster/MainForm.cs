@@ -13,6 +13,7 @@ using System.Collections;
 using EnumsNET;
 using System.Threading;
 using System.Configuration;
+using System.Collections.Concurrent;
 
 namespace AutoMaster
 {
@@ -21,11 +22,13 @@ namespace AutoMaster
         private bool isOpen = false;
         private int TransmissionCount = 0;
         private int ReceiveCount = 0;
-
+        ArrayList rxBuffer = new ArrayList();
+        ConcurrentQueue<MyMessage> msgList = new ConcurrentQueue<MyMessage>();
         ConfigInfo.ConfigInNvm configInNvm;
 
         List<ParamList.ParamItem> paramList;
         Thread RegularSendThread = null;
+        Thread UpdateUiThread = null;
 
         public MainForm()
         {
@@ -68,17 +71,59 @@ namespace AutoMaster
             }
 
             serialPort.DataReceived += new SerialDataReceivedEventHandler(serialDataReceive);
+
+            UpdateUiThread = new Thread(new ThreadStart(updateUiMethod));
+            UpdateUiThread.Start();
         }
 
-        ArrayList rxBuffer = new ArrayList();
+        void updateUiMethod()
+        {
+            while (true)
+            {
+                try
+                {
+                    listView_State_Update(ParamList.ParamList_Update(paramList, rxBuffer));
 
+                    this.Invoke((EventHandler)(delegate
+                    {
+                        tbxReceiveCount.Text = ReceiveCount.ToString();
+                        tbxSendCount.Text = (TransmissionCount).ToString();
+                    }));
+                    MyMessage msg;
+                    bool update = false;
+                    if (msgList.Count > 0)
+                    {
+                        update = true;
+                    }
+                    for (int i = msgList.Count; i > 0; i--)
+                    {
+                        if (msgList.TryDequeue(out msg))
+                            ShowMessage(msg);
+
+                    }
+                    if (update)
+                    {
+                        this.Invoke((EventHandler)(delegate
+                        {
+                            tbxData.SelectionStart = tbxData.TextLength;
+                            tbxData.ScrollToCaret();
+
+                        }));
+                    }
+                    GC.Collect();
+                    Thread.Sleep(100);
+                }
+                catch (Exception) { }
+            }
+        }
+        
         private void serialDataReceive(object sender, SerialDataReceivedEventArgs e)
         {
             byte[] buff = new byte[serialPort.BytesToRead];
             serialPort.Read(buff, 0, buff.Length);
             rxBuffer.AddRange(buff);
-            listView_State_Update(ParamList.ParamList_Update(paramList, rxBuffer));
             ReceiveCount += buff.Length;
+
             if (checkBoxShowInHex.CheckState == CheckState.Checked)
             {
                 ShowBytes(buff, 2);
@@ -90,16 +135,19 @@ namespace AutoMaster
         }
         private void listView_State_Update(List<ParamList.ParamItem> list)
         {
-
             foreach (ParamList.ParamItem item in list)
             {
-                ListViewItem listItem = new ListViewItem();
-                listItem.Text = item.id.ToString();
-                listItem.SubItems.Add(new ListViewItem.ListViewSubItem().Text = item.name);
-                listItem.SubItems.Add(new ListViewItem.ListViewSubItem().Text = item.value);
-                listItem.SubItems.Add(new ListViewItem.ListViewSubItem().Text = item.unit);
-                listView_State.Items.RemoveAt(item.id);
-                listView_State.Items.Insert(item.id, listItem);
+                this.Invoke((EventHandler)(delegate
+                {
+                    try
+                    {
+                        listView_State.Items[item.id].SubItems[2].Text = item.value;
+                    }
+                    catch (Exception)
+                    {
+
+                    }
+                }));
             }
         }
         private void serialDataTransmission(string data)
@@ -125,10 +173,9 @@ namespace AutoMaster
                 {
                     MyMessage msg = new MyMessage(1);
                     msg.SetObj(Encoding.Default.GetString(buff));
-                    ShowMessage(msg);
+                    msgList.Enqueue(msg);
                 }
                 TransmissionCount += buff.Length;
-                tbxSendCount.Text = (TransmissionCount).ToString();
                 serialPort.Write(buff, 0, buff.Length);
             }
             else
@@ -150,10 +197,10 @@ namespace AutoMaster
                 {
                     MyMessage msg = new MyMessage(1);
                     msg.SetObj(tbxSend.Text);
-                    ShowMessage(msg);
+                    msgList.Enqueue(msg);
                 }
             }
-            GC.Collect(1, GCCollectionMode.Forced);
+            GC.Collect();
         }
 
         private void ShowBytes(byte[] buff, int type)
@@ -175,13 +222,10 @@ namespace AutoMaster
             }
             MyMessage message = new MyMessage(2);
             message.SetObj(receive);
-            this.Invoke((EventHandler)(delegate
-            {
-                tbxReceiveCount.Text = ReceiveCount.ToString();
-                ShowMessage(message);
-            }));
-        }
 
+            msgList.Enqueue(message);
+        }
+        
         private void ShowMessage(object msg)
         {
             MyMessage message = (MyMessage)msg;
@@ -198,48 +242,47 @@ namespace AutoMaster
                         {
                             if (checkBoxShowSend.CheckState == CheckState.Checked)
                             {
-                                tbxData.SelectionStart = tbxData.Text.Length;
+                                tbxData.SelectionStart = tbxData.TextLength;
                                 tbxData.SelectionColor = Color.OrangeRed;
                                 tbxData.AppendText((string)message.GetObj());
                                 if (checkBoxAutoNewLine.CheckState == CheckState.Checked)
                                 {
                                     tbxData.AppendText("\r\n");
                                 }
-                                tbxData.ScrollToCaret();
+                                //tbxData.ScrollToCaret();
                             }
                             break;
                         }
                     case 2:
                         {
-                            tbxData.SelectionStart = tbxData.Text.Length;
+                            tbxData.SelectionStart = tbxData.TextLength;
                             tbxData.SelectionColor = Color.Blue;
                             tbxData.AppendText((string)message.GetObj());
                             if (checkBoxAutoNewLine.CheckState == CheckState.Checked)
                             {
                                 tbxData.AppendText("\r\n");
                             }
-                            tbxData.ScrollToCaret();
+                            //tbxData.ScrollToCaret();
                             break;
                         }
                     case 3:
                         {
-                            tbxData.SelectionStart = tbxData.Text.Length;
+                            tbxData.SelectionStart = tbxData.TextLength;
                             tbxData.SelectionColor = Color.Red;
                             tbxData.AppendText((string)message.GetObj());
                             tbxData.AppendText("\r\n");
-                            tbxData.ScrollToCaret();
+                            //tbxData.ScrollToCaret();
                             break;
                         }
                     case 4:
                         {
-                            tbxData.SelectionStart = tbxData.Text.Length;
+                            tbxData.SelectionStart = tbxData.TextLength;
                             tbxData.SelectionColor = Color.Black;
                             tbxData.AppendText((string)message.GetObj());
                             break;
                         }
                 }
             }));
-            GC.Collect();
         }
 
         private void statusStrip_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -519,7 +562,8 @@ namespace AutoMaster
 
         private void RegularSenMethod()
         {
-            while (checkBoxSendRegular.CheckState == CheckState.Checked)
+            while (checkBoxSendRegular != null 
+                && checkBoxSendRegular.CheckState == CheckState.Checked)
             {
                 this.Invoke((EventHandler)(delegate
                 {
@@ -632,7 +676,7 @@ namespace AutoMaster
                 MyMessage msg = new MyMessage(4);
                 btnClearData_Click(null, null);
                 msg.SetObj(fileData);
-                ShowMessage(msg);
+                msgList.Enqueue(msg);
             }
         }
 
@@ -669,12 +713,45 @@ namespace AutoMaster
                 }
             }
         }
+        private void MainForm_OnClosing(object sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                ConfigInfo.SaveConfigToNvm(configInNvm);
+                checkBoxSendRegular.Checked = false;
+                // serialPort.Close();
+                 RegularSendThread.Abort();
+                UpdateUiThread.Abort();
+                serialPort.Dispose();
+                Thread.Sleep(100);
+                serialPort.Close();
+                Thread.Sleep(100);
+                serialPort.Dispose();
+                Thread.Sleep(100);
+            }
+            catch (Exception)
+            { }
+        }
 
         private void MainForm_FormClosing(object sender, FormClosingEventArgs e)
         {
             try
             {
                 ConfigInfo.SaveConfigToNvm(configInNvm);
+                if (checkBoxSendRegular != null)
+                {
+                    checkBoxSendRegular.Checked = false;
+                }
+                // serialPort.Close();
+                if (RegularSendThread != null)
+                    RegularSendThread.Abort();
+                if (UpdateUiThread != null)
+                    UpdateUiThread.Abort();
+                Thread.Sleep(100);
+                serialPort.Close();
+                Thread.Sleep(100);
+                serialPort.Dispose();
+                Thread.Sleep(100);
             }
             catch (Exception)
             { }
@@ -698,7 +775,7 @@ namespace AutoMaster
                 UInt16 value = 32767;
                 rxBuffer.AddRange(new byte[] { 0x5a, i, 0, 2, Convert.ToByte(value&0xff),
                     Convert.ToByte(value >> 8), 0, Convert.ToByte('\n') });
-                listView_State_Update(ParamList.ParamList_Update(paramList, rxBuffer));
+                //listView_State_Update(ParamList.ParamList_Update(paramList, rxBuffer));
             }
         }
     }

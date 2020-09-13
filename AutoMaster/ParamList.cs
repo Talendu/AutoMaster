@@ -206,51 +206,62 @@ namespace AutoMaster
             int index = 0, end;
             for (;;)
             {
-                stream = (byte[])rxBuffer.ToArray(typeof(byte));
-                index = find(stream, 0, rxBuffer.Count, 0x5a);
-                if (index < 0)
+                try
                 {
-                    rxBuffer.Clear();
-                    break;
-                }
-                end = find(stream, index + 6, rxBuffer.Count, Convert.ToByte('\n'));
-                if (end < 0)
-                {
-                    rxBuffer.Clear();
-                    break;
-                }
-                rxBuffer.RemoveRange(0, end+1);
-                if (end - index < 6)
-                    continue;
-                frame.head = stream[index];
-                frame.data_type = stream[index + 3];
-                if (frame.data_type == 2)
-                {
-                    frame.crc = stream[index + 6];
-                    if (calculate_crc(stream.Skip(1).Take(5).ToArray(), 5) == frame.crc)
+                    stream = (byte[])rxBuffer.ToArray(typeof(byte));
+                    index = find(stream, 0, rxBuffer.Count, 0x5a);
+                    if (index < 0)
                     {
-                        frame.id = (UInt16)(256 * stream[index + 2] + stream[index + 1]);
-                        frame.data[0] = stream[index + 4];
-                        frame.data[1] = stream[index + 5];
-                        if (list[frame.id].formula != null &&
-                            list[frame.id].formula.Length > 0 &&
-                            list[frame.id].formula.Substring(0, 1).Equals("/"))
-                        {
-                            double value = Convert.ToDouble(frame.data[1]) * 256.0 + Convert.ToDouble(frame.data[0]);
-                            string formula = list[frame.id].formula.Substring(1);
-                            value = value / Convert.ToDouble(formula);
-                            string str_value = value.ToString("f6");
-                            if (!str_value.Equals(list[frame.id].value))
-                            {
-                                list[frame.id].value = str_value;
-                            }
-                        }
-                        else
-                        {
-                            list[frame.id].value = ((Convert.ToUInt16(frame.data[1]) << 8 )+ frame.data[0]).ToString();
-                        }
-                        outList.Add(list[frame.id]);
+                        rxBuffer.Clear();
+                        break;
                     }
+                    end = find(stream, index + 6, rxBuffer.Count, Convert.ToByte('\n'));
+                    if (end < 0)
+                    {
+                        rxBuffer.Clear();
+                        break;
+                    }
+                    rxBuffer.RemoveRange(0, end + 1);
+                    if (end - index < 6)
+                        continue;
+                    frame.head = stream[index];
+                    frame.data_type = stream[index + 3];
+                    if (frame.data_type == 2)
+                    {
+                        frame.crc = stream[index + 6];
+                        if (calculate_crc(stream.Skip(1).Take(5).ToArray(), 5) == frame.crc)
+                        {
+                            frame.id = (UInt16)(256 * stream[index + 2] + stream[index + 1]);
+                            frame.data[0] = stream[index + 4];
+                            frame.data[1] = stream[index + 5];
+                            if (list[frame.id].formula != null &&
+                                list[frame.id].formula.Length > 0 &&
+                                list[frame.id].formula.Substring(0, 1).Equals("/"))
+                            {
+                                double value = Convert.ToDouble(frame.data[1]) * 256.0 + Convert.ToDouble(frame.data[0]);
+                                string formula = list[frame.id].formula.Substring(1);
+                                value = value / Convert.ToDouble(formula);
+                                string str_value = value.ToString("f6");
+                                if (!str_value.Equals(list[frame.id].value))
+                                {
+                                    list[frame.id].value = str_value;
+                                }
+                                else
+                                {
+                                    continue;
+                                }
+                            }
+                            else
+                            {
+                                list[frame.id].value = ((Convert.ToUInt16(frame.data[1]) << 8) + frame.data[0]).ToString();
+                            }
+                            outList.Add(list[frame.id]);
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    rxBuffer.Remove(null);
                 }
             }
 
