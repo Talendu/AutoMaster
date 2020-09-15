@@ -66,6 +66,14 @@
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader3 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.dataGridView_param = new System.Windows.Forms.DataGridView();
+            this.paramDataView_id = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.paramDataView_name = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.paramDataView_value = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.paramDataView_unit = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.paramDataView_description = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip_Com = new System.Windows.Forms.ToolStripDropDownButton();
             this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -78,12 +86,16 @@
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.fontDialog = new System.Windows.Forms.FontDialog();
+            this.btn_startCom = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.menuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageCom.SuspendLayout();
             this.GBoxSendData.SuspendLayout();
             this.GBoxMessageView.SuspendLayout();
             this.tabPageParamShow.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_param)).BeginInit();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -151,7 +163,7 @@
             // Menu_VIew_Page
             // 
             this.Menu_VIew_Page.Name = "Menu_VIew_Page";
-            this.Menu_VIew_Page.Size = new System.Drawing.Size(152, 22);
+            this.Menu_VIew_Page.Size = new System.Drawing.Size(124, 22);
             this.Menu_VIew_Page.Text = "分页";
             this.Menu_VIew_Page.Click += new System.EventHandler(this.Menu_VIew_Page_Click);
             // 
@@ -170,6 +182,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPageCom);
             this.tabControl1.Controls.Add(this.tabPageParamShow);
+            this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Location = new System.Drawing.Point(12, 28);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -435,6 +448,7 @@
             // 
             // tabPageParamShow
             // 
+            this.tabPageParamShow.Controls.Add(this.btn_startCom);
             this.tabPageParamShow.Controls.Add(this.listView_State);
             this.tabPageParamShow.Location = new System.Drawing.Point(4, 22);
             this.tabPageParamShow.Name = "tabPageParamShow";
@@ -453,12 +467,13 @@
             this.columnHeader1,
             this.columnHeader2,
             this.columnHeader3,
-            this.columnHeader4});
+            this.columnHeader4,
+            this.columnHeader5});
             this.listView_State.FullRowSelect = true;
             this.listView_State.GridLines = true;
-            this.listView_State.Location = new System.Drawing.Point(6, 6);
+            this.listView_State.Location = new System.Drawing.Point(6, 40);
             this.listView_State.Name = "listView_State";
-            this.listView_State.Size = new System.Drawing.Size(740, 447);
+            this.listView_State.Size = new System.Drawing.Size(740, 413);
             this.listView_State.TabIndex = 0;
             this.listView_State.UseCompatibleStateImageBehavior = false;
             this.listView_State.View = System.Windows.Forms.View.Details;
@@ -476,12 +491,77 @@
             // columnHeader3
             // 
             this.columnHeader3.Text = "值";
-            this.columnHeader3.Width = 103;
+            this.columnHeader3.Width = 76;
             // 
             // columnHeader4
             // 
             this.columnHeader4.Text = "单位";
-            this.columnHeader4.Width = 146;
+            this.columnHeader4.Width = 58;
+            // 
+            // columnHeader5
+            // 
+            this.columnHeader5.Text = "描述";
+            this.columnHeader5.Width = 263;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.button1);
+            this.tabPage1.Controls.Add(this.dataGridView_param);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Size = new System.Drawing.Size(752, 459);
+            this.tabPage1.TabIndex = 2;
+            this.tabPage1.Text = "参数显示";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // dataGridView_param
+            // 
+            this.dataGridView_param.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridView_param.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_param.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.paramDataView_id,
+            this.paramDataView_name,
+            this.paramDataView_value,
+            this.paramDataView_unit,
+            this.paramDataView_description});
+            this.dataGridView_param.Location = new System.Drawing.Point(4, 40);
+            this.dataGridView_param.Name = "dataGridView_param";
+            this.dataGridView_param.RowTemplate.Height = 23;
+            this.dataGridView_param.Size = new System.Drawing.Size(745, 416);
+            this.dataGridView_param.TabIndex = 0;
+            this.dataGridView_param.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_param_CellEndEdit);
+            this.dataGridView_param.SortCompare += new System.Windows.Forms.DataGridViewSortCompareEventHandler(this.dataGridView_param_SortCompare);
+            // 
+            // paramDataView_id
+            // 
+            this.paramDataView_id.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.paramDataView_id.HeaderText = "序号";
+            this.paramDataView_id.Name = "paramDataView_id";
+            this.paramDataView_id.Width = 54;
+            // 
+            // paramDataView_name
+            // 
+            this.paramDataView_name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.paramDataView_name.HeaderText = "名字";
+            this.paramDataView_name.Name = "paramDataView_name";
+            this.paramDataView_name.Width = 54;
+            // 
+            // paramDataView_value
+            // 
+            this.paramDataView_value.HeaderText = "值";
+            this.paramDataView_value.Name = "paramDataView_value";
+            // 
+            // paramDataView_unit
+            // 
+            this.paramDataView_unit.HeaderText = "单位";
+            this.paramDataView_unit.Name = "paramDataView_unit";
+            // 
+            // paramDataView_description
+            // 
+            this.paramDataView_description.HeaderText = "描述";
+            this.paramDataView_description.Name = "paramDataView_description";
             // 
             // statusStrip
             // 
@@ -582,6 +662,26 @@
             this.openFileDialog.FileName = "*.log";
             this.openFileDialog.Filter = "log files|*.log|All files|*.*";
             // 
+            // btn_startCom
+            // 
+            this.btn_startCom.Location = new System.Drawing.Point(6, 6);
+            this.btn_startCom.Name = "btn_startCom";
+            this.btn_startCom.Size = new System.Drawing.Size(75, 28);
+            this.btn_startCom.TabIndex = 1;
+            this.btn_startCom.Text = "开始通信";
+            this.btn_startCom.UseVisualStyleBackColor = true;
+            this.btn_startCom.Click += new System.EventHandler(this.btn_startCom_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(4, 6);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 28);
+            this.button1.TabIndex = 2;
+            this.button1.Text = "开始通信";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.btn_startCom_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -604,6 +704,8 @@
             this.GBoxMessageView.ResumeLayout(false);
             this.GBoxMessageView.PerformLayout();
             this.tabPageParamShow.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_param)).EndInit();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -659,8 +761,18 @@
         private System.Windows.Forms.ToolStripDropDownButton statusStrip_StopBit;
         private System.Windows.Forms.ToolStripDropDownButton statusStrip_Parity;
         private System.Windows.Forms.ToolStripDropDownButton statusStrip_Enable;
-        private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.FontDialog fontDialog;
+        private System.Windows.Forms.ColumnHeader columnHeader5;
+        private System.Windows.Forms.ColumnHeader columnHeader1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.DataGridView dataGridView_param;
+        private System.Windows.Forms.DataGridViewTextBoxColumn paramDataView_id;
+        private System.Windows.Forms.DataGridViewTextBoxColumn paramDataView_name;
+        private System.Windows.Forms.DataGridViewTextBoxColumn paramDataView_value;
+        private System.Windows.Forms.DataGridViewTextBoxColumn paramDataView_unit;
+        private System.Windows.Forms.DataGridViewTextBoxColumn paramDataView_description;
+        private System.Windows.Forms.Button btn_startCom;
+        private System.Windows.Forms.Button button1;
     }
 }
 

@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Xml;
 
 namespace AutoMaster
 {
@@ -11,11 +13,12 @@ namespace AutoMaster
     {
         public class ParamItem
         {
-            public int id;
-            public string name;
-            public string value;
-            public string formula;
-            public string unit;
+            public int id { get; set; }
+            public string name { get; set; }
+            public string value { get; set; }
+            public string formula { get; set; }
+            public string unit { get; set; }
+            public string description { get; set; }
             public ParamItem(int id, string name, string value,string formula, string unit)
             {
                 this.id = id;
@@ -47,6 +50,8 @@ namespace AutoMaster
                 this.unit = unit;
                 this.value = "";
             }
+            public ParamItem()
+            { }
         }
         class FRAME
         {
@@ -60,9 +65,83 @@ namespace AutoMaster
                 data = new byte[2];
             }
         }
+        public static int FindById(List<ParamItem> list, int id)
+        {
+            int index  = 0;
+            for (index = 0; index < list.Count; index++)
+            {
+                if (list[index].id == id)
+                    return index;
+            }
+            return -1;
+        }
+        public static List<ParamItem> ParamList_GetFromXml()
+        {
+            List<ParamItem> items = new List<ParamItem>();
+            XmlDocument xmlDoc = new XmlDocument();
+
+            XmlReaderSettings settings = new XmlReaderSettings();
+
+            settings.IgnoreComments = true;//忽略文档里面的注释
+
+            XmlReader reader = XmlReader.Create(Application.StartupPath + "/paramList.xml", settings);
+
+            xmlDoc.Load(reader);
+            XmlNodeList nodelist = xmlDoc.SelectNodes("paramList/param");
+            foreach (XmlNode node in nodelist)
+            {
+                ParamItem entity = new ParamItem();
+                try
+                {
+                    // 将节点转换为元素，便于得到节点的属性值
+                    XmlElement xe = (XmlElement)node;
+                    // 得到id和name两个属性的属性值
+                    entity.id = Convert.ToInt32(xe.GetAttribute("id").ToString());
+                    entity.name = xe.GetAttribute("name").ToString();
+
+                    // 得到所有子节点
+                    XmlNodeList xnl0 = xe.ChildNodes;
+                    foreach (XmlNode childNode in xnl0)
+                    {
+                        XmlElement param = (XmlElement)childNode;
+                        if (param.Name.Equals("formula"))
+                            entity.formula = param.InnerText;
+                        if (param.Name.Equals("unit"))
+                            entity.unit = param.InnerText;
+                        if (param.Name.Equals("description"))
+                            entity.description = param.InnerText;
+                    }
+                    items.Add(entity);
+                }
+                catch (Exception)
+                { }
+            }
+            reader.Close();
+            /* 排序 */
+            items.Sort((left, right) =>
+            {
+                if (left.id > right.id)
+                    return 1;
+                else if (left.id == right.id)
+                    return 0;
+                else
+                    return -1;
+            });
+            /* id不连续时插入空的条目 */
+            int count = items.Count;
+            for (int i = 1; i < count; i++)
+            {
+                if (items[i-1].id + 1 != items[i].id)
+                {
+                    ParamItem item = new ParamItem(i, "", "");
+                    items.Insert(i, item);
+                    count++;
+                }
+            }
+            return items;
+        }
         public static List<ParamItem> ParamList_Init()
         {
-            int i = 0;
             List<ParamItem> items = new List<ParamItem>();
             items.Add(new ParamItem(0, "SystemPara.TargetVersion", "0", "", ""));
             items.Add(new ParamItem(1, "SystemPara.SoftwareVersion", "0", "", ""));
@@ -74,7 +153,7 @@ namespace AutoMaster
             items.Add(new ParamItem(7, "SpeedModePara.Max_Speed", "0", "/327.67", "%"));
             items.Add(new ParamItem(8, "SpeedModePara.Kaff", "0", "/10", "A"));
             items.Add(new ParamItem(9, "SpeedModePara.Kbff", "0", "/10", "A"));
-            items.Add(new ParamItem(10, "SpeedModePara.Ka_b_BuiltRate", "0", "/1000", "s"));
+            //items.Add(new ParamItem(10, "SpeedModePara.Ka_b_BuiltRate", "0", "/1000", "s"));
             items.Add(new ParamItem(11, "SpeedModePara.Ka_b_ReleaseRate", "0", "/1000", "s"));
             items.Add(new ParamItem(12, "SpeedModePara.Full_Accel_Rate_HS", "0", "/1000", "s"));
             items.Add(new ParamItem(13, "SpeedModePara.Full_Accel_Rate_LS", "0", "/1000", "s"));
@@ -172,6 +251,7 @@ namespace AutoMaster
             items.Add(new ParamItem(105, "Battery.Empty_Voltage_Level", "0", "/10", ""));
             items.Add(new ParamItem(106, "Battery.Discharge_Time", "0", "", "min"));
             items.Add(new ParamItem(107, "Battery.BDI_Reset_Percent", "0", "", "%"));
+            items.AddRange(ParamList_GetFromXml());
             return items;
         }
         static byte calculate_crc(byte[] stream, int len)
@@ -234,28 +314,33 @@ namespace AutoMaster
                             frame.id = (UInt16)(256 * stream[index + 2] + stream[index + 1]);
                             frame.data[0] = stream[index + 4];
                             frame.data[1] = stream[index + 5];
-                            if (list[frame.id].formula != null &&
-                                list[frame.id].formula.Length > 0 &&
-                                list[frame.id].formula.Substring(0, 1).Equals("/"))
+                            int listIndex = FindById(list, frame.id);
+                            if (listIndex < 0)
+                            {
+                                continue;
+                            }
+                            if (list[listIndex].formula != null &&
+                                list[listIndex].formula.Length > 0 &&
+                                list[listIndex].formula.Substring(0, 1).Equals("/"))
                             {
                                 double value = Convert.ToDouble(frame.data[1]) * 256.0 + Convert.ToDouble(frame.data[0]);
-                                string formula = list[frame.id].formula.Substring(1);
+                                string formula = list[listIndex].formula.Substring(1);
                                 value = value / Convert.ToDouble(formula);
                                 string str_value = value.ToString("f6");
-                                if (!str_value.Equals(list[frame.id].value))
-                                {
-                                    list[frame.id].value = str_value;
-                                }
-                                else
-                                {
-                                    continue;
-                                }
+                                //if (!str_value.Equals(list[frame.id].value))
+                                //{
+                                    list[listIndex].value = str_value;
+                                //}
+                                //else
+                                //{
+                                //    continue;
+                                //}
                             }
                             else
                             {
-                                list[frame.id].value = ((Convert.ToUInt16(frame.data[1]) << 8) + frame.data[0]).ToString();
+                                list[listIndex].value = ((Convert.ToUInt16(frame.data[1]) << 8) + frame.data[0]).ToString();
                             }
-                            outList.Add(list[frame.id]);
+                            outList.Add(list[listIndex]);
                         }
                     }
                 }

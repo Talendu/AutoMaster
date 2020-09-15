@@ -22,8 +22,11 @@ namespace AutoMaster
         private bool isOpen = false;
         private int TransmissionCount = 0;
         private int ReceiveCount = 0;
+        private bool connecting = false;
+
         ArrayList rxBuffer = new ArrayList();
         ConcurrentQueue<MyMessage> msgList = new ConcurrentQueue<MyMessage>();
+        ConcurrentQueue<ParamList.ParamItem> paramQuaua = new ConcurrentQueue<ParamList.ParamItem>();
         ConfigInfo.ConfigInNvm configInNvm;
 
         List<ParamList.ParamItem> paramList;
@@ -60,20 +63,57 @@ namespace AutoMaster
             serialPort.ReadTimeout = 1000000 / serialPort.BaudRate;
 
             paramList = ParamList.ParamList_Init();
-            foreach (ParamList.ParamItem item in paramList)
+            int i;
+            for (i = 0; i < paramList.Count; i++)
             {
+                ParamList.ParamItem item = paramList[i];
                 ListViewItem listItem = new ListViewItem();
                 listItem.Text = item.id.ToString();
                 listItem.SubItems.Add(new ListViewItem.ListViewSubItem().Text = item.name);
                 listItem.SubItems.Add(new ListViewItem.ListViewSubItem().Text = item.value);
                 listItem.SubItems.Add(new ListViewItem.ListViewSubItem().Text = item.unit);
+                listItem.SubItems.Add(new ListViewItem.ListViewSubItem().Text = item.description);
                 listView_State.Items.Add(listItem);
+                DataGridViewRow row = new DataGridViewRow();
+                DataGridViewTextBoxCell cell = new DataGridViewTextBoxCell();
+                cell.Value = item.id.ToString();
+                row.Cells.Add(cell);
+                cell = new DataGridViewTextBoxCell();
+                cell.Value = item.name;
+                row.Cells.Add(cell);
+                cell = new DataGridViewTextBoxCell();
+                cell.Value = item.value;
+                row.Cells.Add(cell);
+                cell = new DataGridViewTextBoxCell();
+                cell.Value = item.unit;
+                row.Cells.Add(cell);
+                cell = new DataGridViewTextBoxCell();
+                cell.Value = item.description;
+                row.Cells.Add(cell);
+                dataGridView_param.Rows.Add(row);
+                dataGridView_param.Rows[i].Cells[0].ReadOnly = true;
+                dataGridView_param.Rows[i].Cells[1].ReadOnly = true;
+                dataGridView_param.Rows[i].Cells[3].ReadOnly = true;
+                dataGridView_param.Rows[i].Cells[4].ReadOnly = true;
             }
-
+            dataGridView_param.Rows[paramList.Count].Cells[2].ReadOnly = true;
+            listView_State.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+            listView_State.Columns[0].TextAlign = HorizontalAlignment.Center;
+            listView_State.Columns[1].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+            //listView_State.Columns[1].TextAlign = HorizontalAlignment.Center;
+            //listView_State.Columns[2].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+            listView_State.Columns[2].TextAlign = HorizontalAlignment.Center;
+            listView_State.Columns[3].AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize);
+            listView_State.Columns[3].TextAlign = HorizontalAlignment.Center;
+            listView_State.Columns[4].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
+            //listView_State.Columns[4].TextAlign = HorizontalAlignment.Center;
             serialPort.DataReceived += new SerialDataReceivedEventHandler(serialDataReceive);
 
             UpdateUiThread = new Thread(new ThreadStart(updateUiMethod));
             UpdateUiThread.Start();
+            tabControl1.TabPages.RemoveAt(1);
+
+
         }
 
         void updateUiMethod()
@@ -82,12 +122,17 @@ namespace AutoMaster
             {
                 try
                 {
-                    listView_State_Update(ParamList.ParamList_Update(paramList, rxBuffer));
+                    for (int i = paramQuaua.Count; i > 0; i--)
+                    {
+                        ParamList.ParamItem item;
+                        paramQuaua.TryDequeue(out item);
+                        listView_State_Update(item);
+                    }
 
                     this.Invoke((EventHandler)(delegate
                     {
                         tbxReceiveCount.Text = ReceiveCount.ToString();
-                        tbxSendCount.Text = (TransmissionCount).ToString();
+                        tbxSendCount.Text = TransmissionCount.ToString();
                     }));
                     MyMessage msg;
                     bool update = false;
@@ -119,10 +164,32 @@ namespace AutoMaster
         
         private void serialDataReceive(object sender, SerialDataReceivedEventArgs e)
         {
+            bool find = false;
             byte[] buff = new byte[serialPort.BytesToRead];
             serialPort.Read(buff, 0, buff.Length);
             rxBuffer.AddRange(buff);
             ReceiveCount += buff.Length;
+            foreach (ParamList.ParamItem item in ParamList.ParamList_Update(paramList, rxBuffer))
+            {
+                find = false;
+                if (connecting)
+                {
+                    serialHexTransmission("5a 00 00 80 00 0a");
+                }
+                foreach (ParamList.ParamItem queueItem in paramQuaua)
+                {
+                    if (queueItem.id == item.id)
+                    {
+                        queueItem.value = item.value;
+                        find = true;
+                        break;
+                    }
+                }
+                if (find == false)
+                {
+                    paramQuaua.Enqueue(item);
+                }
+            }
 
             if (checkBoxShowInHex.CheckState == CheckState.Checked)
             {
@@ -137,11 +204,17 @@ namespace AutoMaster
         {
             foreach (ParamList.ParamItem item in list)
             {
+                int listIndex = ParamList.FindById(paramList, item.id);
+                if (listIndex < 0)
+                {
+                    continue;
+                }
                 this.Invoke((EventHandler)(delegate
                 {
                     try
                     {
-                        listView_State.Items[item.id].SubItems[2].Text = item.value;
+                        listView_State.Items[listIndex].SubItems[2].Text = item.value;
+                        dataGridView_param.Rows[listIndex].Cells[2].Value = item.value;
                     }
                     catch (Exception)
                     {
@@ -150,6 +223,72 @@ namespace AutoMaster
                 }));
             }
         }
+        private void listView_State_Update(ParamList.ParamItem item)
+        {
+            int listIndex = ParamList.FindById(paramList, item.id);
+            if (listIndex < 0)
+            {
+                return;
+            }
+            this.Invoke((EventHandler)(delegate
+            {
+                try
+                {
+                    listView_State.Items[listIndex].SubItems[2].Text = item.value;
+                    for (listIndex = 0; listIndex < dataGridView_param.Rows.Count; listIndex++)
+                    {
+                        if (dataGridView_param.Rows[listIndex].Cells[0].Value.Equals(item.id.ToString()) &&
+                            !dataGridView_param.Rows[listIndex].Cells[2].IsInEditMode)
+                            dataGridView_param.Rows[listIndex].Cells[2].Value = item.value;
+                    }
+                }
+                catch (Exception)
+                {
+
+                }
+            }));
+        }
+
+        private void serialTextTransmission(string data)
+        {
+            byte[] buff;
+            if (checkBoxSendNewLine.CheckState == CheckState.Checked)
+            {
+                data += "\r\n";
+            }
+            buff = Encoding.Default.GetBytes(data);
+            if (checkBoxShowSend.CheckState == CheckState.Checked)
+            {
+                MyMessage msg = new MyMessage(1);
+                msg.SetObj(Encoding.Default.GetString(buff));
+                msgList.Enqueue(msg);
+            }
+            TransmissionCount += buff.Length;
+            serialPort.Write(buff, 0, buff.Length);
+        }
+
+        private void serialHexTransmission(string data)
+        {
+            Byte[] Buff = new Byte[(data.Length + 1) / 2 + 2];
+            int Len = 0;
+            Len = hex2num(data, Buff);
+
+            if (checkBoxSendNewLine.CheckState == CheckState.Checked)
+            {
+                Buff[Len++] = (byte)'\r';
+                Buff[Len++] = (byte)'\n';
+            }
+
+            TransmissionCount += Len;
+            serialPort.Write(Buff, 0, Len);
+            if (checkBoxShowSend.CheckState == CheckState.Checked)
+            {
+                MyMessage msg = new MyMessage(1);
+                msg.SetObj(data);
+                msgList.Enqueue(msg);
+            }
+        }
+
         private void serialDataTransmission(string data)
         {
             if (isOpen == false)
@@ -163,42 +302,11 @@ namespace AutoMaster
 
             if (checkBoxSendHex.CheckState == CheckState.Unchecked)
             {
-                byte[] buff;
-                if (checkBoxSendNewLine.CheckState == CheckState.Checked)
-                {
-                    data += "\r\n";
-                }
-                buff = Encoding.Default.GetBytes(data);
-                if (checkBoxShowSend.CheckState == CheckState.Checked)
-                {
-                    MyMessage msg = new MyMessage(1);
-                    msg.SetObj(Encoding.Default.GetString(buff));
-                    msgList.Enqueue(msg);
-                }
-                TransmissionCount += buff.Length;
-                serialPort.Write(buff, 0, buff.Length);
+                serialTextTransmission(data);
             }
             else
             {
-                Byte[] Buff = new Byte[(tbxSend.Text.Length + 1) / 2 + 2];
-                int Len = 0;
-                Len = hex2num(tbxSend.Text, Buff);
-
-                if (checkBoxSendNewLine.CheckState == CheckState.Checked)
-                {
-                    Buff[Len++] = (byte)'\r';
-                    Buff[Len++] = (byte)'\n';
-                }
-
-                TransmissionCount += Len;
-                tbxSendCount.Text = (TransmissionCount).ToString();
-                serialPort.Write(Buff, 0, Len);
-                if (checkBoxShowSend.CheckState == CheckState.Checked)
-                {
-                    MyMessage msg = new MyMessage(1);
-                    msg.SetObj(tbxSend.Text);
-                    msgList.Enqueue(msg);
-                }
+                serialHexTransmission(data);
             }
             GC.Collect();
         }
@@ -497,7 +605,7 @@ namespace AutoMaster
             serialDataTransmission(tbxSend.Text);
         }
 
-        public int hex2num(string Hexs, Byte[] Buff)
+        public static int hex2num(string Hexs, Byte[] Buff)
         {
             Int32 Len = 0;
             Int32 HexCycle = 0;
@@ -776,6 +884,80 @@ namespace AutoMaster
                 rxBuffer.AddRange(new byte[] { 0x5a, i, 0, 2, Convert.ToByte(value&0xff),
                     Convert.ToByte(value >> 8), 0, Convert.ToByte('\n') });
                 //listView_State_Update(ParamList.ParamList_Update(paramList, rxBuffer));
+            }
+        }
+
+        private void dataGridView_param_SortCompare(object sender, DataGridViewSortCompareEventArgs e)
+        {
+            if (e.Column.Index == 0)
+            {
+                e.SortResult = int.Parse(e.CellValue1.ToString()).CompareTo(int.Parse(e.CellValue2.ToString()));
+                e.Handled = true;
+            }
+        }
+
+        private void btn_startCom_Click(object sender, EventArgs e)
+        {
+            Button btn = (Button)sender;
+            if (connecting)
+            {
+                btn.Text = "开始通信";
+                connecting = false;
+            }
+            else
+            {
+                if (isOpen == false)
+                {
+                    statusStrip_Enable_Click(null, null);
+                }
+                if (isOpen)
+                {
+                    btn.Text = "停止通信";
+                    connecting = true;
+                    serialHexTransmission("5a 00 00 20 00 0a");
+                }
+            }
+        }
+
+        private void dataGridView_param_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            if (isOpen == false)
+            {
+                statusStrip_Enable_Click(null, null);
+            }
+            if (isOpen)
+            {
+                DataGridView view = (DataGridView)sender;
+                try
+                {
+                    int id = Convert.ToInt32(view.Rows[e.RowIndex].Cells[0].Value);
+                    double value = Convert.ToInt32(view.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
+                    int listIndex = ParamList.FindById(paramList, id);
+                    if (listIndex < 0)
+                    {
+                        view.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = "";
+                        return;
+                    }
+                    if (paramList[listIndex].formula != null &&
+                        paramList[listIndex].formula.Length > 0 &&
+                        paramList[listIndex].formula.Substring(0, 1).Equals("/"))
+                    {
+                        string formula = paramList[listIndex].formula.Substring(1);
+                        value = value * Convert.ToDouble(formula);
+                    }
+                    string strValue = "ff ff";
+                    if (value < 65536)
+                    {
+                        int intValue = (int)value;
+                        byte value0 = (byte)(intValue & 0xff);
+                        byte value1 = (byte)(intValue >> 8);
+                        strValue = value0.ToString("x").PadLeft(2, '0') + " "
+                            + value1.ToString("x").PadLeft(2, '0');
+                    }
+                    serialHexTransmission("5a " + id.ToString("x").PadLeft(2, '0')
+                        + " 00 02 " + strValue + " 00 0a");
+                }
+                catch (Exception) { }
             }
         }
     }
