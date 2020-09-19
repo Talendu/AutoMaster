@@ -84,10 +84,6 @@ namespace AutoMaster
             public byte data_type;
             public byte[] data;
             public byte crc;
-            public FRAME()
-            {
-                data = new byte[2];
-            }
         }
         public static int FindById(List<ParamItem> list, int id)
         {
@@ -319,6 +315,8 @@ namespace AutoMaster
             FRAME frame = new FRAME();
             List<ParamItem> outList = new List<ParamItem>();
             byte[] stream;
+            int payloadSize = 0;
+            int headSize = 4; //起始符(1) + ID(2) + type(1) = 4
             int index = 0, end;
             for (;;)
             {
@@ -331,54 +329,85 @@ namespace AutoMaster
                         rxBuffer.Clear();
                         break;
                     }
-                    end = find(stream, index + 6, rxBuffer.Count, Convert.ToByte('\n'));
+                    if (rxBuffer.Count < index + 5)
+                        break;
+                    frame.data_type = stream[index + 3];
+                    payloadSize = frame.data_type & 0x0f;
+                    if (rxBuffer.Count < index + headSize + payloadSize + 2)
+                        break;
+                    frame.crc = stream[index + headSize + payloadSize];
+
+                    end = find(stream, index + headSize + payloadSize + 1, rxBuffer.Count, Convert.ToByte('\n'));
                     if (end < 0)
                     {
                         rxBuffer.Clear();
                         break;
                     }
-                    rxBuffer.RemoveRange(0, end + 1);
-                    if (end - index < 6)
-                        continue;
                     frame.head = stream[index];
-                    frame.data_type = stream[index + 3];
-                    if ((frame.data_type & 0x0f) == 2)
+                    rxBuffer.RemoveRange(0, end + 1);
+                    if (calculate_crc(stream.Skip(1).Take(5).ToArray(), 5) != frame.crc)
                     {
-                        frame.crc = stream[index + 6];
-                        if (calculate_crc(stream.Skip(1).Take(5).ToArray(), 5) == frame.crc)
+                        break;
+                    }
+                    frame.id = (UInt16)(256 * stream[index + 2] + stream[index + 1]);
+                    int listIndex = FindById(list, frame.id);
+                    if (listIndex < 0)
+                    {
+                        continue;
+                    }
+                    frame.data = new byte[payloadSize];
+                    for (int i = 0; i < payloadSize; i++)
+                    {
+                        frame.data[i] = stream[index + headSize + i];
+                    }
+                    if (frame.data_type == 0x20 || frame.data_type == 0x80)
+                    {
+                        continue;
+                    }
+                    if (list[listIndex].formula != null &&
+                        list[listIndex].formula.Length > 0)
+                    {
+                        if (list[listIndex].formula.Substring(0, 1).Equals("/"))
                         {
-                            frame.id = (UInt16)(256 * stream[index + 2] + stream[index + 1]);
-                            frame.data[0] = stream[index + 4];
-                            frame.data[1] = stream[index + 5];
-                            int listIndex = FindById(list, frame.id);
-                            if (listIndex < 0)
+                            double value = 0;
+                            string formula;
+                            if ((frame.data_type & 0x30) == 0x00)
                             {
-                                continue;
-                            }
-                            if (list[listIndex].formula != null &&
-                                list[listIndex].formula.Length > 0 &&
-                                list[listIndex].formula.Substring(0, 1).Equals("/"))
-                            {
-                                double value = Convert.ToDouble(frame.data[1]) * 256.0 + Convert.ToDouble(frame.data[0]);
-                                string formula = list[listIndex].formula.Substring(1);
-                                value = value / Convert.ToDouble(formula);
-                                string str_value = value.ToString("f6");
-                                //if (!str_value.Equals(list[frame.id].value))
-                                //{
-                                    list[listIndex].value = str_value;
-                                //}
-                                //else
-                                //{
-                                //    continue;
-                                //}
+                                for (int i = 0; i < payloadSize; i++)
+                                {
+                                    value = value * 256 + frame.data[i];
+                                }
                             }
                             else
                             {
-                                list[listIndex].value = ((Convert.ToUInt16(frame.data[1]) << 8) + frame.data[0]).ToString();
+                                MessageBox.Show("暂不支持改格式数据!", "警告");
+                                continue;
                             }
-                            outList.Add(list[listIndex]);
+                            formula = list[listIndex].formula.Substring(1);
+                            value = value / Convert.ToDouble(formula);
+                            list[listIndex].value = value.ToString("f6");
                         }
                     }
+                    else
+                    {
+                        if ((frame.data_type & 0x30) == 0x00 || (frame.data_type & 0xC0) == 0x00)
+                        {
+                            UInt64 s_value = 0;
+                            UInt64 temp = 0;
+                            for (int i = 0; i < payloadSize; i++)
+                            {
+                                temp = frame.data[i];
+                                s_value = s_value + (temp << 8 * i);
+                            }
+                            list[listIndex].value = s_value.ToString();
+                        }
+                        else
+                        {
+                            MessageBox.Show("暂不支持改格式数据!", "警告");
+                            continue;
+                        }
+                    }
+                    outList.Add(list[listIndex]);
                 }
                 catch (Exception)
                 {

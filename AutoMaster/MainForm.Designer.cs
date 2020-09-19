@@ -832,10 +832,6 @@
             // 
             this.saveFileDialog.Filter = "log files|*.log|All files|*.*";
             // 
-            // serialPort
-            // 
-            this.serialPort.ReadTimeout = 1;
-            // 
             // openFileDialog
             // 
             this.openFileDialog.FileName = "*.log";
@@ -850,6 +846,7 @@
             this.tbxData.Multiline = true;
             this.tbxData.Name = "tbxData";
             this.tbxData.ReadOnly = true;
+            this.tbxData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.tbxData.Size = new System.Drawing.Size(727, 266);
             this.tbxData.TabIndex = 32;
             // 

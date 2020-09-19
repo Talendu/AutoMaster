@@ -33,6 +33,8 @@ namespace AutoMaster
         Thread RegularSendThread = null;
         Thread UpdateUiThread = null;
 
+        StringBuilder displayBuffer = new StringBuilder();
+
         public MainForm()
         {
             InitializeComponent();
@@ -205,12 +207,14 @@ namespace AutoMaster
                     {
                         this.Invoke((EventHandler)(delegate
                         {
-                            tbxData.SelectionStart = tbxData.TextLength;
-                            tbxData.ScrollToCaret();
+                            //tbxData.SelectionStart = tbxData.TextLength;
+                            //tbxData.ScrollToCaret();
+                            tbxData.AppendText(displayBuffer.ToString());
+                            displayBuffer.Clear();
+                            GC.Collect();
 
                         }));
                     }
-                    GC.Collect();
                     Thread.Sleep(200);
                 }
                 catch (Exception) { }
@@ -342,7 +346,7 @@ namespace AutoMaster
                                     shift = Convert.ToInt32(name.Substring(3, 2));
                                     width = 1;
                                 }
-                                grid.Rows[listIndex].Cells[2].Value = (Convert.ToInt32(parentValue) >> shift) & ((1 << width) - 1);
+                                grid.Rows[listIndex].Cells[2].Value = (Convert.ToUInt32(parentValue) >> shift) & ((1 << width) - 1);
                             }
                             else
                             {
@@ -462,11 +466,11 @@ namespace AutoMaster
                             {
                                 //tbxData.SelectionStart = tbxData.TextLength;
                                 //tbxData.SelectionColor = Color.OrangeRed;
-                                tbxData.AppendText("发:");
-                                tbxData.AppendText((string)message.GetObj());
+                                displayBuffer.Append("发:");
+                                displayBuffer.Append((string)message.GetObj());
                                 if (checkBoxAutoNewLine.CheckState == CheckState.Checked)
                                 {
-                                    tbxData.AppendText("\r\n");
+                                    displayBuffer.Append("\r\n");
                                 }
                                 //tbxData.ScrollToCaret();
                             }
@@ -476,11 +480,11 @@ namespace AutoMaster
                         {
                             //tbxData.SelectionStart = tbxData.TextLength;
                             //tbxData.SelectionColor = Color.Blue;
-                            tbxData.AppendText("收:");
-                            tbxData.AppendText((string)message.GetObj());
+                            displayBuffer.Append("收:");
+                            displayBuffer.Append((string)message.GetObj());
                             if (checkBoxAutoNewLine.CheckState == CheckState.Checked)
                             {
-                                tbxData.AppendText("\r\n");
+                                displayBuffer.Append("\r\n");
                             }
                             //tbxData.ScrollToCaret();
                             break;
@@ -489,9 +493,9 @@ namespace AutoMaster
                         {
                             //tbxData.SelectionStart = tbxData.TextLength;
                             //tbxData.SelectionColor = Color.Red;
-                            tbxData.AppendText("错误: ");
-                            tbxData.AppendText((string)message.GetObj());
-                            tbxData.AppendText("\r\n");
+                            displayBuffer.Append("错误: ");
+                            displayBuffer.Append((string)message.GetObj());
+                            displayBuffer.Append("\r\n");
                             //tbxData.ScrollToCaret();
                             break;
                         }
@@ -499,8 +503,8 @@ namespace AutoMaster
                         {
                             //tbxData.SelectionStart = tbxData.TextLength;
                             //tbxData.SelectionColor = Color.Black;
-                            tbxData.AppendText("警告: ");
-                            tbxData.AppendText((string)message.GetObj());
+                            displayBuffer.Append("警告: ");
+                            displayBuffer.Append((string)message.GetObj());
                             break;
                         }
                 }
