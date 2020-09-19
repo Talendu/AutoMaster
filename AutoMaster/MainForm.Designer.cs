@@ -61,6 +61,7 @@
             this.tbxSendCount = new System.Windows.Forms.TextBox();
             this.LabelSendCount = new System.Windows.Forms.Label();
             this.tabPageParamShow = new System.Windows.Forms.TabPage();
+            this.btn_startCom = new System.Windows.Forms.Button();
             this.listView_State = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -68,12 +69,27 @@
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.button1 = new System.Windows.Forms.Button();
             this.dataGridView_param = new System.Windows.Forms.DataGridView();
             this.paramDataView_id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.paramDataView_name = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.paramDataView_value = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.paramDataView_unit = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.paramDataView_description = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.dataGridView_di = new System.Windows.Forms.DataGridView();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.dataGridView_do = new System.Windows.Forms.DataGridView();
+            this.dataGridViewTextBoxColumn6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip_Com = new System.Windows.Forms.ToolStripDropDownButton();
             this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -86,8 +102,6 @@
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.fontDialog = new System.Windows.Forms.FontDialog();
-            this.btn_startCom = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.menuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageCom.SuspendLayout();
@@ -96,6 +110,10 @@
             this.tabPageParamShow.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_param)).BeginInit();
+            this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_di)).BeginInit();
+            this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_do)).BeginInit();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -183,6 +201,8 @@
             this.tabControl1.Controls.Add(this.tabPageCom);
             this.tabControl1.Controls.Add(this.tabPageParamShow);
             this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Location = new System.Drawing.Point(12, 28);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -458,6 +478,16 @@
             this.tabPageParamShow.Text = "参数显示";
             this.tabPageParamShow.UseVisualStyleBackColor = true;
             // 
+            // btn_startCom
+            // 
+            this.btn_startCom.Location = new System.Drawing.Point(6, 6);
+            this.btn_startCom.Name = "btn_startCom";
+            this.btn_startCom.Size = new System.Drawing.Size(75, 28);
+            this.btn_startCom.TabIndex = 1;
+            this.btn_startCom.Text = "开始通信";
+            this.btn_startCom.UseVisualStyleBackColor = true;
+            this.btn_startCom.Click += new System.EventHandler(this.btn_startCom_Click);
+            // 
             // listView_State
             // 
             this.listView_State.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -514,6 +544,16 @@
             this.tabPage1.Text = "参数显示";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(4, 6);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 28);
+            this.button1.TabIndex = 2;
+            this.button1.Text = "开始通信";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.btn_startCom_Click);
+            // 
             // dataGridView_param
             // 
             this.dataGridView_param.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -536,32 +576,182 @@
             // 
             // paramDataView_id
             // 
-            this.paramDataView_id.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.paramDataView_id.HeaderText = "序号";
             this.paramDataView_id.Name = "paramDataView_id";
-            this.paramDataView_id.Width = 54;
+            this.paramDataView_id.ReadOnly = true;
+            this.paramDataView_id.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.paramDataView_id.Width = 60;
             // 
             // paramDataView_name
             // 
-            this.paramDataView_name.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.paramDataView_name.HeaderText = "名字";
             this.paramDataView_name.Name = "paramDataView_name";
-            this.paramDataView_name.Width = 54;
+            this.paramDataView_name.ReadOnly = true;
+            this.paramDataView_name.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.paramDataView_name.Width = 200;
             // 
             // paramDataView_value
             // 
             this.paramDataView_value.HeaderText = "值";
             this.paramDataView_value.Name = "paramDataView_value";
+            this.paramDataView_value.ReadOnly = true;
+            this.paramDataView_value.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.paramDataView_value.Width = 80;
             // 
             // paramDataView_unit
             // 
             this.paramDataView_unit.HeaderText = "单位";
             this.paramDataView_unit.Name = "paramDataView_unit";
+            this.paramDataView_unit.ReadOnly = true;
+            this.paramDataView_unit.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.paramDataView_unit.Width = 60;
             // 
             // paramDataView_description
             // 
+            this.paramDataView_description.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.paramDataView_description.HeaderText = "描述";
             this.paramDataView_description.Name = "paramDataView_description";
+            this.paramDataView_description.ReadOnly = true;
+            this.paramDataView_description.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.paramDataView_description.Width = 35;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.dataGridView_di);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Size = new System.Drawing.Size(752, 459);
+            this.tabPage2.TabIndex = 3;
+            this.tabPage2.Text = "di";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // dataGridView_di
+            // 
+            this.dataGridView_di.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridView_di.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_di.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn1,
+            this.dataGridViewTextBoxColumn2,
+            this.dataGridViewTextBoxColumn3,
+            this.dataGridViewTextBoxColumn4,
+            this.dataGridViewTextBoxColumn5});
+            this.dataGridView_di.Location = new System.Drawing.Point(4, 3);
+            this.dataGridView_di.Name = "dataGridView_di";
+            this.dataGridView_di.RowTemplate.Height = 23;
+            this.dataGridView_di.Size = new System.Drawing.Size(745, 453);
+            this.dataGridView_di.TabIndex = 1;
+            // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.HeaderText = "序号";
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            this.dataGridViewTextBoxColumn1.ReadOnly = true;
+            this.dataGridViewTextBoxColumn1.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.dataGridViewTextBoxColumn1.Width = 60;
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            this.dataGridViewTextBoxColumn2.HeaderText = "名字";
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            this.dataGridViewTextBoxColumn2.ReadOnly = true;
+            this.dataGridViewTextBoxColumn2.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.dataGridViewTextBoxColumn2.Width = 200;
+            // 
+            // dataGridViewTextBoxColumn3
+            // 
+            this.dataGridViewTextBoxColumn3.HeaderText = "值";
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            this.dataGridViewTextBoxColumn3.ReadOnly = true;
+            this.dataGridViewTextBoxColumn3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.dataGridViewTextBoxColumn3.Width = 80;
+            // 
+            // dataGridViewTextBoxColumn4
+            // 
+            this.dataGridViewTextBoxColumn4.HeaderText = "单位";
+            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
+            this.dataGridViewTextBoxColumn4.ReadOnly = true;
+            this.dataGridViewTextBoxColumn4.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.dataGridViewTextBoxColumn4.Width = 60;
+            // 
+            // dataGridViewTextBoxColumn5
+            // 
+            this.dataGridViewTextBoxColumn5.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.dataGridViewTextBoxColumn5.HeaderText = "描述";
+            this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
+            this.dataGridViewTextBoxColumn5.ReadOnly = true;
+            this.dataGridViewTextBoxColumn5.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.dataGridViewTextBoxColumn5.Width = 35;
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.dataGridView_do);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(752, 459);
+            this.tabPage3.TabIndex = 4;
+            this.tabPage3.Text = "do";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // dataGridView_do
+            // 
+            this.dataGridView_do.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridView_do.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_do.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn6,
+            this.dataGridViewTextBoxColumn7,
+            this.dataGridViewTextBoxColumn8,
+            this.dataGridViewTextBoxColumn9,
+            this.dataGridViewTextBoxColumn10});
+            this.dataGridView_do.Location = new System.Drawing.Point(4, 3);
+            this.dataGridView_do.Name = "dataGridView_do";
+            this.dataGridView_do.RowTemplate.Height = 23;
+            this.dataGridView_do.Size = new System.Drawing.Size(745, 453);
+            this.dataGridView_do.TabIndex = 2;
+            this.dataGridView_do.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_param_CellEndEdit);
+            // 
+            // dataGridViewTextBoxColumn6
+            // 
+            this.dataGridViewTextBoxColumn6.HeaderText = "序号";
+            this.dataGridViewTextBoxColumn6.Name = "dataGridViewTextBoxColumn6";
+            this.dataGridViewTextBoxColumn6.ReadOnly = true;
+            this.dataGridViewTextBoxColumn6.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.dataGridViewTextBoxColumn6.Width = 60;
+            // 
+            // dataGridViewTextBoxColumn7
+            // 
+            this.dataGridViewTextBoxColumn7.HeaderText = "名字";
+            this.dataGridViewTextBoxColumn7.Name = "dataGridViewTextBoxColumn7";
+            this.dataGridViewTextBoxColumn7.ReadOnly = true;
+            this.dataGridViewTextBoxColumn7.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.dataGridViewTextBoxColumn7.Width = 200;
+            // 
+            // dataGridViewTextBoxColumn8
+            // 
+            this.dataGridViewTextBoxColumn8.HeaderText = "值";
+            this.dataGridViewTextBoxColumn8.Name = "dataGridViewTextBoxColumn8";
+            this.dataGridViewTextBoxColumn8.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.dataGridViewTextBoxColumn8.Width = 80;
+            // 
+            // dataGridViewTextBoxColumn9
+            // 
+            this.dataGridViewTextBoxColumn9.HeaderText = "单位";
+            this.dataGridViewTextBoxColumn9.Name = "dataGridViewTextBoxColumn9";
+            this.dataGridViewTextBoxColumn9.ReadOnly = true;
+            this.dataGridViewTextBoxColumn9.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.dataGridViewTextBoxColumn9.Width = 60;
+            // 
+            // dataGridViewTextBoxColumn10
+            // 
+            this.dataGridViewTextBoxColumn10.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.dataGridViewTextBoxColumn10.HeaderText = "描述";
+            this.dataGridViewTextBoxColumn10.Name = "dataGridViewTextBoxColumn10";
+            this.dataGridViewTextBoxColumn10.ReadOnly = true;
+            this.dataGridViewTextBoxColumn10.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.dataGridViewTextBoxColumn10.Width = 35;
             // 
             // statusStrip
             // 
@@ -657,30 +847,14 @@
             // 
             this.saveFileDialog.Filter = "log files|*.log|All files|*.*";
             // 
+            // serialPort
+            // 
+            this.serialPort.ReadTimeout = 1;
+            // 
             // openFileDialog
             // 
             this.openFileDialog.FileName = "*.log";
             this.openFileDialog.Filter = "log files|*.log|All files|*.*";
-            // 
-            // btn_startCom
-            // 
-            this.btn_startCom.Location = new System.Drawing.Point(6, 6);
-            this.btn_startCom.Name = "btn_startCom";
-            this.btn_startCom.Size = new System.Drawing.Size(75, 28);
-            this.btn_startCom.TabIndex = 1;
-            this.btn_startCom.Text = "开始通信";
-            this.btn_startCom.UseVisualStyleBackColor = true;
-            this.btn_startCom.Click += new System.EventHandler(this.btn_startCom_Click);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(4, 6);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 28);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "开始通信";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.btn_startCom_Click);
             // 
             // MainForm
             // 
@@ -706,6 +880,10 @@
             this.tabPageParamShow.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_param)).EndInit();
+            this.tabPage2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_di)).EndInit();
+            this.tabPage3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_do)).EndInit();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -766,13 +944,27 @@
         private System.Windows.Forms.ColumnHeader columnHeader1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.DataGridView dataGridView_param;
+        private System.Windows.Forms.Button btn_startCom;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.DataGridView dataGridView_di;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.DataGridView dataGridView_do;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn6;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn7;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn8;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn9;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn10;
         private System.Windows.Forms.DataGridViewTextBoxColumn paramDataView_id;
         private System.Windows.Forms.DataGridViewTextBoxColumn paramDataView_name;
         private System.Windows.Forms.DataGridViewTextBoxColumn paramDataView_value;
         private System.Windows.Forms.DataGridViewTextBoxColumn paramDataView_unit;
         private System.Windows.Forms.DataGridViewTextBoxColumn paramDataView_description;
-        private System.Windows.Forms.Button btn_startCom;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
     }
 }
 

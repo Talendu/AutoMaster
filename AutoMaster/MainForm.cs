@@ -66,7 +66,24 @@ namespace AutoMaster
             int i;
             for (i = 0; i < paramList.Count; i++)
             {
+                DataGridView grid;
                 ParamList.ParamItem item = paramList[i];
+                if (item.id < 256)
+                {
+                    grid = dataGridView_param;
+                }
+                else if (item.id < 258)
+                {
+                    grid = dataGridView_do;
+                }
+                else if (item.id < 260)
+                {
+                    grid = dataGridView_di;
+                }
+                else
+                {
+                    break;
+                }
                 ListViewItem listItem = new ListViewItem();
                 listItem.Text = item.id.ToString();
                 listItem.SubItems.Add(new ListViewItem.ListViewSubItem().Text = item.name);
@@ -90,13 +107,43 @@ namespace AutoMaster
                 cell = new DataGridViewTextBoxCell();
                 cell.Value = item.description;
                 row.Cells.Add(cell);
-                dataGridView_param.Rows.Add(row);
-                dataGridView_param.Rows[i].Cells[0].ReadOnly = true;
-                dataGridView_param.Rows[i].Cells[1].ReadOnly = true;
-                dataGridView_param.Rows[i].Cells[3].ReadOnly = true;
-                dataGridView_param.Rows[i].Cells[4].ReadOnly = true;
+                grid.Rows.Add(row);
+                if (item.bitMap.Count > 0)
+                {
+                    foreach (ParamList.BitMap bit in item.bitMap)
+                    {
+                        row = new DataGridViewRow();
+                        cell = new DataGridViewTextBoxCell();
+                        cell.Value = item.id.ToString();
+                        cell.Style.ForeColor = Color.White;
+                        cell.Style.Alignment = DataGridViewContentAlignment.BottomRight;
+                        row.Cells.Add(cell);
+                        cell = new DataGridViewTextBoxCell();
+                        if (bit.bitstart == bit.bitend)
+                        {
+                            cell.Value = "bit"+ bit.bitstart.ToString().PadLeft(2, '0') + ": " + bit.name;
+                        }
+                        else
+                        {
+                            cell.Value = "bit[" + bit.bitstart.ToString().PadLeft(2, '0')
+                                + "," + bit.bitend.ToString().PadLeft(2, '0') + "]: " + bit.name;
+                        }
+                        row.Cells.Add(cell);
+                        cell = new DataGridViewTextBoxCell();
+                        cell.Value = bit.value;
+                        row.Cells.Add(cell);
+                        cell = new DataGridViewTextBoxCell();
+                        cell.Value = bit.unit;
+                        row.Cells.Add(cell);
+                        cell = new DataGridViewTextBoxCell();
+                        cell.Value = bit.description;
+                        row.Cells.Add(cell);
+                        grid.Rows.Add(row);
+                    }
+                }
             }
-            dataGridView_param.Rows[paramList.Count].Cells[2].ReadOnly = true;
+            dataGridView_param.AllowUserToAddRows = false;
+            dataGridView_param.AllowUserToDeleteRows = false;
             listView_State.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
             listView_State.Columns[0].TextAlign = HorizontalAlignment.Center;
             listView_State.Columns[1].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
@@ -108,6 +155,14 @@ namespace AutoMaster
             listView_State.Columns[4].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
             //listView_State.Columns[4].TextAlign = HorizontalAlignment.Center;
             serialPort.DataReceived += new SerialDataReceivedEventHandler(serialDataReceive);
+
+
+            dataGridView_di.AllowUserToAddRows = false;
+            dataGridView_di.AllowUserToDeleteRows = false;
+
+
+            dataGridView_do.AllowUserToAddRows = false;
+            dataGridView_do.AllowUserToDeleteRows = false;
 
             UpdateUiThread = new Thread(new ThreadStart(updateUiMethod));
             UpdateUiThread.Start();
@@ -156,7 +211,7 @@ namespace AutoMaster
                         }));
                     }
                     GC.Collect();
-                    Thread.Sleep(100);
+                    Thread.Sleep(200);
                 }
                 catch (Exception) { }
             }
@@ -169,6 +224,16 @@ namespace AutoMaster
             serialPort.Read(buff, 0, buff.Length);
             rxBuffer.AddRange(buff);
             ReceiveCount += buff.Length;
+
+            if (checkBoxShowInHex.CheckState == CheckState.Checked)
+            {
+                ShowBytes(buff, 2);
+            }
+            else
+            {
+                ShowBytes(buff, 1);
+            }
+
             foreach (ParamList.ParamItem item in ParamList.ParamList_Update(paramList, rxBuffer))
             {
                 find = false;
@@ -189,15 +254,6 @@ namespace AutoMaster
                 {
                     paramQuaua.Enqueue(item);
                 }
-            }
-
-            if (checkBoxShowInHex.CheckState == CheckState.Checked)
-            {
-                ShowBytes(buff, 2);
-            }
-            else
-            {
-                ShowBytes(buff, 1);
             }
         }
         private void listView_State_Update(List<ParamList.ParamItem> list)
@@ -223,11 +279,39 @@ namespace AutoMaster
                 }));
             }
         }
+
+        private DataGridView findGridViewById(int id)
+        {
+            if (id < 256)
+            {
+                return dataGridView_param;
+            }
+            else if (id < 258)
+            {
+                return dataGridView_do;
+
+            }
+            else if (id < 260)
+            {
+                return dataGridView_di;
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         private void listView_State_Update(ParamList.ParamItem item)
         {
             int listIndex = ParamList.FindById(paramList, item.id);
+            string parentValue = null;
+            DataGridView grid = findGridViewById(item.id);
             if (listIndex < 0)
             {
+                return;
+            }
+            if (grid == null)
+            { 
                 return;
             }
             this.Invoke((EventHandler)(delegate
@@ -235,11 +319,37 @@ namespace AutoMaster
                 try
                 {
                     listView_State.Items[listIndex].SubItems[2].Text = item.value;
-                    for (listIndex = 0; listIndex < dataGridView_param.Rows.Count; listIndex++)
+                    for (listIndex = 0; listIndex < grid.Rows.Count; listIndex++)
                     {
-                        if (dataGridView_param.Rows[listIndex].Cells[0].Value.Equals(item.id.ToString()) &&
-                            !dataGridView_param.Rows[listIndex].Cells[2].IsInEditMode)
-                            dataGridView_param.Rows[listIndex].Cells[2].Value = item.value;
+                        if (grid.Rows[listIndex].Cells[0].Value.Equals(item.id.ToString()) &&
+                            !grid.Rows[listIndex].Cells[2].IsInEditMode)
+                        {
+                            string name = grid.Rows[listIndex].Cells[1].Value.ToString().Split(':')[0];
+                            if (name.Substring(0, 3).Equals("bit")
+                                && parentValue != null
+                                && parentValue.Length > 0)
+                            {
+                                int shift;
+                                int width = 0;
+                                int oldValue = Convert.ToInt32(paramList[listIndex].value);
+                                if (name.Substring(3, 1).Equals("["))
+                                {
+                                    shift = Convert.ToInt32(name.Substring(3, 2));
+                                    width = Convert.ToInt32(name.Substring(6, 2)) - shift;
+                                }
+                                else
+                                {
+                                    shift = Convert.ToInt32(name.Substring(3, 2));
+                                    width = 1;
+                                }
+                                grid.Rows[listIndex].Cells[2].Value = (Convert.ToInt32(parentValue) >> shift) & ((1 << width) - 1);
+                            }
+                            else
+                            {
+                                grid.Rows[listIndex].Cells[2].Value = item.value;
+                                parentValue = item.value;
+                            }
+                        }
                     }
                 }
                 catch (Exception)
@@ -921,6 +1031,7 @@ namespace AutoMaster
 
         private void dataGridView_param_CellEndEdit(object sender, DataGridViewCellEventArgs e)
         {
+            int listIndex = 0;
             if (isOpen == false)
             {
                 statusStrip_Enable_Click(null, null);
@@ -931,8 +1042,8 @@ namespace AutoMaster
                 try
                 {
                     int id = Convert.ToInt32(view.Rows[e.RowIndex].Cells[0].Value);
+                    listIndex = ParamList.FindById(paramList, id);
                     double value = Convert.ToInt32(view.Rows[e.RowIndex].Cells[e.ColumnIndex].Value);
-                    int listIndex = ParamList.FindById(paramList, id);
                     if (listIndex < 0)
                     {
                         view.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = "";
@@ -945,20 +1056,56 @@ namespace AutoMaster
                         string formula = paramList[listIndex].formula.Substring(1);
                         value = value * Convert.ToDouble(formula);
                     }
-                    string strValue = "ff ff";
+                    int intValue = 65535;
                     if (value < 65536)
                     {
-                        int intValue = (int)value;
+                        intValue = (int)value;
+                    }
+                    string name = view.Rows[e.RowIndex].Cells[1].Value.ToString().Split(':')[0];
+                    if (name.Substring(0,3).Equals("bit"))
+                    {
+                        int shift;
+                        int width = 0;
+                        int oldValue = Convert.ToInt32(paramList[listIndex].value);
+                        if (name.Substring(3, 1).Equals("["))
+                        {
+                            shift = Convert.ToInt32(name.Substring(3, 2));
+                            width = Convert.ToInt32(name.Substring(6, 2)) - shift;
+                        }
+                        else
+                        {
+                            shift = Convert.ToInt32(name.Substring(3, 2));
+                            width = 1;
+                        }
+                        if (intValue >= (1 << width))
+                        {
+                            view.Rows[e.RowIndex].Cells[2].Value = ((oldValue >> shift) & ((1 << width) - 1)).ToString();
+                            return;
+                        }
+                        else
+                        {
+                            int mask = (1 << width) - 1;
+                            intValue = (oldValue & (~(mask << shift))) + (intValue << shift);
+                        }
+                    }
+                    string strValue = "ff ff";
+                    if (intValue < 65536)
+                    {
                         byte value0 = (byte)(intValue & 0xff);
                         byte value1 = (byte)(intValue >> 8);
                         strValue = value0.ToString("x").PadLeft(2, '0') + " "
                             + value1.ToString("x").PadLeft(2, '0');
                     }
-                    serialHexTransmission("5a " + id.ToString("x").PadLeft(2, '0')
-                        + " 00 02 " + strValue + " 00 0a");
+                    paramList[listIndex].value = intValue.ToString();
+
+                    serialHexTransmission("5a " + (id & 0xff).ToString("x").PadLeft(2, '0') + " "
+                        + (id  >> 8).ToString("x").PadLeft(2, '0') + " "
+                        + paramList[listIndex].type.ToString("x").PadLeft(2, '0') + " " 
+                        + strValue + " 00 0a");
                 }
                 catch (Exception) { }
             }
+            paramQuaua.Enqueue(paramList[listIndex]);
         }
     }
 }

@@ -1,5 +1,159 @@
-﻿<?xml version="1.0" encoding="utf-8" ?>
-
+<?xml version="1.0" encoding="utf-8" ?>
 <paramList>
-  
+    <param id="0" name="SystemPara.TargetVersion" formula="" unit="" description="描述"/>
+    <param id="1" name="SystemPara.SoftwareVersion" formula="" unit="" description="描述"/>
+    <param id="2" name="SystemPara.SerialNumber" formula="" unit="" description="描述"/>
+    <param id="3" name="VehicleWorkMode" formula="{Power_Mode=0,Economy_Mode=1}" unit="" description="描述"/>
+    <param id="4" name="MotorWorkMode" formula="{Speed_Mode=0,Torqu_Mode=1}" unit="" description="描述"/>
+    <param id="5" name="Typer_Max_Speed" formula="" unit="rpm" description="描述"/>
+    <param id="6" name="Torque_Base" formula="" unit="" description="描述"/>
+    <param id="7" name="SpeedModePara.Max_Speed" formula="/327.67" unit="%" description="描述"/>
+    <param id="8" name="SpeedModePara.Kaff" formula="/10" unit="A" description="描述"/>
+    <param id="9" name="SpeedModePara.Kbff" formula="/10" unit="A" description="描述"/>
+    <param id="10" name="SpeedModePara.Ka_b_BuiltRate" formula="/1000" unit="s" description="描述"/>
+    <param id="11" name="SpeedModePara.Ka_b_ReleaseRate" formula="/1000" unit="s" description="描述"/>
+    <param id="12" name="SpeedModePara.Full_Accel_Rate_HS" formula="/1000" unit="s" description="描述"/>
+    <param id="13" name="SpeedModePara.Full_Accel_Rate_LS" formula="/1000" unit="s" description="描述"/>
+    <param id="14" name="SpeedModePara.Low_Accel_Rate" formula="/1000" unit="s" description="描述"/>
+    <param id="15" name="SpeedModePara.Neutral_Decel_Rate_HS" formula="/1000" unit="s" description="描述"/>
+    <param id="16" name="SpeedModePara.Neutral_Decel_Rate_LS" formula="/1000" unit="s" description="描述"/>
+    <param id="17" name="SpeedModePara.Full_Brake_Rate_HS" formula="/1000" unit="s" description="描述"/>
+    <param id="18" name="SpeedModePara.Full_Brake_Rate_LS" formula="/1000" unit="s" description="描述"/>
+    <param id="19" name="SpeedModePara.Low_Brake_Rate" formula="/1000" unit="s" description="描述"/>
+    <param id="20" name="SpeedModePara.Partial_Decel_Rate" formula="/1000" unit="s" description="描述"/>
+    <param id="21" name="SpeedModePara.High_Speed" formula="/327.67" unit="%" description="描述"/>
+    <param id="22" name="SpeedModePara.Low_Speed" formula="/327.67" unit="%" description="描述"/>
+    <param id="23" name="SpeedModePara.Reversal_Soften" formula="/32767" unit="%" description="描述"/>
+    <param id="24" name="SpeedModePara.Max_Speed_Accel" formula="/1000" unit="s" description="描述"/>
+    <param id="25" name="SpeedModePara.Max_Speed_Decel" formula="/1000" unit="s" description="描述"/>
+    <param id="26" name="SpeedModePara.soft_stop_Speed" formula="" unit="rpm" description="描述"/>
+    <param id="27" name="TorqueModePara.Max_Speed" formula="/327.67" unit="%" description="描述"/>
+    <param id="28" name="TorqueModePara.Accel_Rate" formula="/1000" unit="s" description="描述"/>
+    <param id="29" name="TorqueModePara.Accel_Release_Rate" formula="/1000" unit="s" description="描述"/>
+    <param id="30" name="TorqueModePara.Brake_Rate" formula="/1000" unit="s" description="描述"/>
+    <param id="31" name="TorqueModePara.Brake_Release_Rate" formula="/1000" unit="s" description="描述"/>
+    <param id="32" name="TorqueModePara.Neutral_Braking" formula="/327.67" unit="%" description="描述"/>
+    <param id="33" name="TorqueModePara.Neutral_Typer_Speed" formula="" unit="rpm" description="描述"/>
+    <param id="34" name="TorqueModePara.Creep_Torque" formula="/327.67" unit="%" description="描述"/>
+    <param id="35" name="TorqueModePara.Brake_Full_Creep_Cancel" formula="/327.67" unit="%" description="描述"/>
+    <param id="36" name="TorqueModePara.Creep_Build_Rate" formula="/1000" unit="s" description="描述"/>
+    <param id="37" name="TorqueModePara.Creep_Release_Rate" formula="/1000" unit="s" description="描述"/>
+    <param id="38" name="TorqueModePara.Gear_Soften" formula="/327.67" unit="%" description="描述"/>
+    <param id="39" name="TorqueModePara.Brake_Typer_Speed" formula="" unit="rpm" description="描述"/>
+    <param id="40" name="TorqueModePara.Reversal_Soften" formula="/30" unit="%" description="描述"/>
+    <param id="41" name="TorqueModePara.Max_Speed_Decel" formula="/1000" unit="s" description="描述"/>
+    <param id="42" name="TorqueLimit.Restraint_Forward" formula="/327.67" unit="%" description="描述"/>
+    <param id="43" name="TorqueLimit.Restraint_Back" formula="/327.67" unit="%" description="描述"/>
+    <param id="44" name="TorqueLimit.Drive_Current_Limit" formula="/327.67" unit="%" description="描述"/>
+    <param id="45" name="TorqueLimit.Regen_Current_Limit" formula="/327.67" unit="%" description="描述"/>
+    <param id="46" name="TorqueLimit.Brake_Current_Limit" formula="/327.67" unit="%" description="描述"/>
+    <param id="47" name="TorqueLimit.EMR_Current_Limit" formula="/327.67" unit="%" description="描述"/>
+    <param id="48" name="TorqueLimit.Interlock_Brake_Limit" formula="/327.67" unit="%" description="描述"/>
+    <param id="49" name="PowerLimitMap.Nominal_Speed" formula="" unit="" description="描述"/>
+    <param id="50" name="PowerLimitMap.Delta_Speed" formula="" unit="" description="描述"/>
+    <param id="51" name="DriveLimitMap.PowerMode.Nominal" formula="/327.67" unit="%" description="描述"/>
+    <param id="52" name="DriveLimitMap.PowerMode.Plus_Delta" formula="/327.67" unit="%" description="描述"/>
+    <param id="53" name="DriveLimitMap.PowerMode.Plus_2xDelta" formula="/327.67" unit="%" description="描述"/>
+    <param id="54" name="DriveLimitMap.PowerMode.Plus_4xDelta" formula="/327.67" unit="%" description="描述"/>
+    <param id="55" name="DriveLimitMap.PowerMode.Plus_8xDelta" formula="/327.67" unit="%" description="描述"/>
+    <param id="56" name="DriveLimitMap.EconomyMode.Nominal" formula="/327.67" unit="%" description="描述"/>
+    <param id="57" name="DriveLimitMap.EconomyMode.Plus_Delta" formula="/327.67" unit="%" description="描述"/>
+    <param id="58" name="DriveLimitMap.EconomyMode.Plus_2xDelta" formula="/327.67" unit="%" description="描述"/>
+    <param id="59" name="DriveLimitMap.EconomyMode.Plus_4xDelta" formula="/327.67" unit="%" description="描述"/>
+    <param id="60" name="DriveLimitMap.EconomyMode.Plus_8xDelta" formula="/327.67" unit="%" description="描述"/>
+    <param id="61" name="RegenLimitMap.Nominal" formula="/327.67" unit="%" description="描述"/>
+    <param id="62" name="RegenLimitMap.Plus_Delta" formula="/327.67" unit="%" description="描述"/>
+    <param id="63" name="RegenLimitMap.Plus_2xDelta" formula="/327.67" unit="%" description="描述"/>
+    <param id="64" name="RegenLimitMap.Plus_4xDelta" formula="/327.67" unit="%" description="描述"/>
+    <param id="65" name="RegenLimitMap.Plus_8xDelta" formula="/327.67" unit="%" description="描述"/>
+    <param id="66" name="Throttle.Throttle_Type" formula="" unit="" description="描述"/>
+    <param id="67" name="Throttle.Throttle_Chk_Range" formula="/32760" unit="" description="描述"/>
+    <param id="68" name="Throttle.Forward_Deadband" formula="/6553.4" unit="V" description="描述"/>
+    <param id="69" name="Throttle.Forward_Map" formula="/327.67" unit="%" description="描述"/>
+    <param id="70" name="Throttle.Forward_Max" formula="/6553.4" unit="V" description="描述"/>
+    <param id="71" name="Throttle.Forward_Offset" formula="/327.67" unit="%" description="描述"/>
+    <param id="72" name="Throttle.Reverse_Deadband" formula="/6553.4" unit="V" description="描述"/>
+    <param id="73" name="Throttle.Reverse_Map" formula="/327.67" unit="%" description="描述"/>
+    <param id="74" name="Throttle.Reverse_Max" formula="/6553.4" unit="V" description="描述"/>
+    <param id="75" name="Throttle.Reverse_Offset" formula="/327.67" unit="%" description="描述"/>
+    <param id="76" name="Throttle.Throttle_Ctr_En" formula="{off=0,on=1}" unit="" description="描述"/>
+    <param id="77" name="Throttle.Throttle_Value" formula="/327.67" unit="%" description="描述"/>
+    <param id="78" name="Brake.Brake_Pedal_Enable" formula="{off=0,on=1}" unit="" description="描述"/>
+    <param id="79" name="Brake.Brake_Type" formula="" unit="" description="描述"/>
+    <param id="80" name="Brake.Brake_Deadband" formula="/6553.4" unit="V" description="描述"/>
+    <param id="81" name="Brake.Brake_Map" formula="/327.67" unit="%" description="描述"/>
+    <param id="82" name="Brake.Brake_Max" formula="/6553.4" unit="V" description="描述"/>
+    <param id="83" name="Brake.Brake_Offset" formula="/327.67" unit="%" description="描述"/>
+    <param id="84" name="Brake.Brake_Ctr_En" formula="{off=0,on=1}" unit="" description="描述"/>
+    <param id="85" name="Brake.Brake_Value" formula="/327.67" unit="%" description="描述"/>
+    <param id="86" name="LosCtr_En" formula="{off=0,on=1}" unit="" description="描述"/>
+    <param id="87" name="TemperatureMap.Motor_Temp_En" formula="{off=0,on=1}" unit="" description="描述"/>
+    <param id="88" name="TemperatureMap.Motor_Temp_Hot" formula="/10" unit="" description="描述"/>
+    <param id="89" name="TemperatureMap.Motor_Temp_Max" formula="/10" unit="" description="描述"/>
+    <param id="90" name="TemperatureMap.MCU_Temp_En" formula="{off=0,on=1}" unit="" description="描述"/>
+    <param id="91" name="TemperatureMap.MCU_Temp_Hot" formula="/10" unit="" description="描述"/>
+    <param id="92" name="TemperatureMap.MCU_Temp_Max" formula="/10" unit="" description="描述"/>
+    <param id="93" name="TemperatureMap.MCU_LowTemp_En" formula="{off=0,on=1}" unit="" description="描述"/>
+    <param id="94" name="TemperatureMap.MCU_Temp_Cool" formula="/10" unit="" description="描述"/>
+    <param id="95" name="TemperatureMap.MCU_Temp_min" formula="/10" unit="" description="描述"/>
+    <param id="96" name="VoltageMap.Nominal_Voltage" formula="/10" unit="V" description="描述"/>
+    <param id="97" name="VoltageMap.UnderVol_Cutback_En" formula="{disable=0,enable=1}" unit="" description="描述"/>
+    <param id="98" name="VoltageMap.UnderVol_Cutback_Range" formula="/10" unit="V" description="描述"/>
+    <param id="99" name="VoltageMap.User_UnderVoltage" formula="/40.96" unit="%" description="描述"/>
+    <param id="100" name="VoltageMap.OverVol_Cutback_En" formula="{disable=0,enable=1}" unit="" description="描述"/>
+    <param id="101" name="VoltageMap.OverVol_Cutback_Range" formula="/10" unit="V" description="描述"/>
+    <param id="102" name="VoltageMap.User_OverVoltage" formula="/40.996" unit="V" description="描述"/>
+    <param id="103" name="Battery.Reset_Voltage_Level" formula="/10" unit="" description="描述"/>
+    <param id="104" name="Battery.Full_Voltage_Level" formula="/10" unit="" description="描述"/>
+    <param id="105" name="Battery.Empty_Voltage_Level" formula="/10" unit="" description="描述"/>
+    <param id="106" name="Battery.Discharge_Time" formula="" unit="min" description="描述"/>
+    <param id="107" name="Battery.BDI_Reset_Percent" formula="" unit="%" description="描述"/>
+    <param id="256" name="cmd" formula="" unit="" description="doStatus[0]">
+        <bitmap bitstart="0" bitend="0" name="SystemPara.TargetVersion" formula="" unit="" description="空调接触器"/>
+        <bitmap bitstart="1" bitend="1" name="SystemPara.SoftwareVersion" formula="" unit="" description="电机预充电接触器"/>
+        <bitmap bitstart="2" bitend="2" name="SystemPara.SerialNumber" formula="" unit="" description="充电回路高压正接触器"/>
+        <bitmap bitstart="3" bitend="3" name="VehicleWorkMode" formula="" unit="" description="高压负极接触器"/>
+        <bitmap bitstart="4" bitend="4" name="MotorWorkMode" formula="" unit="" description="电机控制器高压正接触器"/>
+        <bitmap bitstart="5" bitend="5" name="Typer_Max_Speed" formula="" unit="rpm" description="PTC接触器"/>
+        <bitmap bitstart="6" bitend="6" name="Torque_Base" formula="" unit="" description="水箱风机启停控制"/>
+        <bitmap bitstart="7" bitend="7" name="SpeedModePara.Max_Speed" formula="" unit="%" description="真空泵启停控制"/>
+    </param>
+    <param id="257" name="cmd" formula="" unit="" description="doStatus[1]">
+        <bitmap bitstart="0" bitend="0" name="SystemPara.TargetVersion" formula="" unit="" description="远光灯"/>
+        <bitmap bitstart="1" bitend="1" name="SystemPara.SoftwareVersion" formula="" unit="" description="近光灯"/>
+        <bitmap bitstart="2" bitend="2" name="SystemPara.SerialNumber" formula="" unit="" description="左转向灯"/>
+        <bitmap bitstart="3" bitend="3" name="VehicleWorkMode" formula="" unit="" description="右转向灯"/>
+        <bitmap bitstart="4" bitend="4" name="MotorWorkMode" formula="" unit="" description="驾驶室灯"/>
+        <bitmap bitstart="5" bitend="5" name="Typer_Max_Speed" formula="" unit="rpm" description="警示灯"/>
+        <bitmap bitstart="6" bitend="6" name="Torque_Base" formula="" unit="" description="雨刮"/>
+        <bitmap bitstart="7" bitend="7" name="SpeedModePara.Max_Speed" formula="" unit="%" description="换气扇"/>
+    </param>
+    <param id="258" name="response" formula="" unit="" description="diStatus[0]">
+        <bitmap bitstart="0" bitend="0" name="SystemPara.TargetVersion" formula="" unit="" description="近光灯"/>
+        <bitmap bitstart="1" bitend="1" name="SystemPara.SoftwareVersion" formula="" unit="" description="左转向灯"/>
+        <bitmap bitstart="2" bitend="2" name="SystemPara.SerialNumber" formula="" unit="" description="右转向灯"/>
+        <bitmap bitstart="3" bitend="3" name="VehicleWorkMode" formula="" unit="" description="驾驶室灯"/>
+        <bitmap bitstart="4" bitend="4" name="MotorWorkMode" formula="" unit="" description="警示灯"/>
+        <bitmap bitstart="5" bitend="5" name="Typer_Max_Speed" formula="" unit="rpm" description="THRO_IO"/>
+        <bitmap bitstart="6" bitend="6" name="Torque_Base" formula="" unit="" description="雨刮开关"/>
+        <bitmap bitstart="7" bitend="7" name="SpeedModePara.Max_Speed" formula="" unit="%" description="换气扇开关"/>
+        <bitmap bitstart="14" bitend="14" name="SpeedModePara.Kaff" formula="" unit="A" description="ON档"/>
+        <bitmap bitstart="15" bitend="15" name="SpeedModePara.Kbff" formula="" unit="A" description="START档"/>
+        <bitmap bitstart="16" bitend="16" name="SpeedModePara.Ka_b_BuiltRate" formula="" unit="s" description="空挡"/>
+        <bitmap bitstart="17" bitend="17" name="SpeedModePara.Ka_b_ReleaseRate" formula="" unit="s" description="STOP档"/>
+        <bitmap bitstart="18" bitend="18" name="SpeedModePara.Full_Accel_Rate_HS" formula="" unit="s" description="D档"/>
+        <bitmap bitstart="19" bitend="19" name="SpeedModePara.Full_Accel_Rate_LS" formula="" unit="s" description="N档"/>
+        <bitmap bitstart="20" bitend="20" name="SpeedModePara.Low_Accel_Rate" formula="" unit="s" description="R档"/>
+        <bitmap bitstart="21" bitend="21" name="SpeedModePara.Neutral_Decel_Rate_HS" formula="" unit="s" description="空调开关"/>
+    </param>
+    <param id="259" name="response" formula="" unit="" description="diStatus[1]">
+        <bitmap bitstart="14" bitend="14" name="SystemPara.TargetVersion" formula="" unit="" description="充电开关"/>
+        <bitmap bitstart="15" bitend="15" name="SystemPara.SoftwareVersion" formula="" unit="" description="PTC开关"/>
+        <bitmap bitstart="16" bitend="16" name="SystemPara.SerialNumber" formula="" unit="" description="制动踏板开关信号"/>
+        <bitmap bitstart="17" bitend="17" name="VehicleWorkMode" formula="" unit="" description="驾驶真空度低信号灯"/>
+        <bitmap bitstart="18" bitend="18" name="MotorWorkMode" formula="" unit="" description="真空度高信号"/>
+        <bitmap bitstart="19" bitend="19" name="Typer_Max_Speed" formula="" unit="rpm" description="油门踏板开关信号"/>
+        <bitmap bitstart="20" bitend="20" name="Torque_Base" formula="" unit="" description="驻车信号"/>
+        <bitmap bitstart="21" bitend="21" name="SpeedModePara.Max_Speed" formula="" unit="%" description="远光灯"/>
+    </param>
 </paramList>

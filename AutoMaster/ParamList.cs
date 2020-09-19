@@ -11,14 +11,32 @@ namespace AutoMaster
 {
     class ParamList
     {
-        public class ParamItem
+        public class BitMap
         {
-            public int id { get; set; }
+            public int bitstart { get; set; }
+            public int bitend { get; set; }
             public string name { get; set; }
             public string value { get; set; }
             public string formula { get; set; }
             public string unit { get; set; }
             public string description { get; set; }
+            public ParamItem parent;
+            public BitMap(ParamItem parent)
+            {
+                this.parent = parent;
+            }
+        }
+        public class ParamItem
+        {
+            public int id { get; set; }
+            public int type { get; set; }
+            public string name { get; set; }
+            public string value { get; set; }
+            public string formula { get; set; }
+            public string unit { get; set; }
+            public string description { get; set; }
+            public bool showBitMap { get; set; }
+            public List<BitMap> bitMap { get; set; }
             public ParamItem(int id, string name, string value,string formula, string unit)
             {
                 this.id = id;
@@ -26,6 +44,7 @@ namespace AutoMaster
                 this.value = value;
                 this.formula = formula;
                 this.unit = unit;
+                bitMap = new List<BitMap>();
             }
             public ParamItem (int id, string name, string value, string unit)
             {
@@ -33,6 +52,7 @@ namespace AutoMaster
                 this.name = name;
                 this.value = value;
                 this.unit = unit;
+                bitMap = new List<BitMap>();
             }
 
             public ParamItem(int id, string name, int value, string unit)
@@ -41,6 +61,7 @@ namespace AutoMaster
                 this.name = name;
                 this.value = value.ToString();
                 this.unit = unit;
+                bitMap = new List<BitMap>();
             }
 
             public ParamItem(int id, string name, string unit)
@@ -49,9 +70,12 @@ namespace AutoMaster
                 this.name = name;
                 this.unit = unit;
                 this.value = "";
+                bitMap = new List<BitMap>();
             }
             public ParamItem()
-            { }
+            {
+                bitMap = new List<BitMap>();
+            }
         }
         class FRAME
         {
@@ -84,49 +108,59 @@ namespace AutoMaster
 
             settings.IgnoreComments = true;//忽略文档里面的注释
 
-            XmlReader reader = XmlReader.Create(Application.StartupPath + "/paramList.xml", settings);
-
-            xmlDoc.Load(reader);
-            XmlNodeList nodelist = xmlDoc.SelectNodes("paramList/param");
-            foreach (XmlNode node in nodelist)
+            try
             {
-                ParamItem entity = new ParamItem();
-                try
+                XmlReader reader = XmlReader.Create(Application.StartupPath + "/paramList.xml", settings);
+
+                xmlDoc.Load(reader);
+                XmlNodeList nodelist = xmlDoc.SelectNodes("paramList/param");
+                foreach (XmlNode node in nodelist)
                 {
+                    ParamItem entity = new ParamItem();
                     // 将节点转换为元素，便于得到节点的属性值
                     XmlElement xe = (XmlElement)node;
                     // 得到id和name两个属性的属性值
                     entity.id = Convert.ToInt32(xe.GetAttribute("id").ToString());
                     entity.name = xe.GetAttribute("name").ToString();
+                    entity.type = Convert.ToInt32(xe.GetAttribute("type").ToString());
+                    entity.formula = xe.GetAttribute("formula").ToString();
+                    entity.unit = xe.GetAttribute("unit").ToString();
+                    entity.description = xe.GetAttribute("description").ToString();
 
                     // 得到所有子节点
                     XmlNodeList xnl0 = xe.ChildNodes;
                     foreach (XmlNode childNode in xnl0)
                     {
                         XmlElement param = (XmlElement)childNode;
-                        if (param.Name.Equals("formula"))
-                            entity.formula = param.InnerText;
-                        if (param.Name.Equals("unit"))
-                            entity.unit = param.InnerText;
-                        if (param.Name.Equals("description"))
-                            entity.description = param.InnerText;
+                        if (param.Name.Equals("bitmap"))
+                        {
+                            BitMap bitmap = new BitMap(entity);
+                            bitmap.bitstart = Convert.ToInt32(param.GetAttribute("bitstart").ToString());
+                            bitmap.bitend = Convert.ToInt32(param.GetAttribute("bitend").ToString());
+                            bitmap.name = param.GetAttribute("name").ToString();
+                            bitmap.formula = param.GetAttribute("formula").ToString();
+                            bitmap.unit = param.GetAttribute("unit").ToString();
+                            bitmap.description = param.GetAttribute("description").ToString();
+                            entity.bitMap.Add(bitmap);
+                        }
                     }
                     items.Add(entity);
                 }
-                catch (Exception)
-                { }
+                reader.Close();
+                /* 排序 */
+                items.Sort((left, right) =>
+                {
+                    if (left.id > right.id)
+                        return 1;
+                    else if (left.id == right.id)
+                        return 0;
+                    else
+                        return -1;
+                });
             }
-            reader.Close();
-            /* 排序 */
-            items.Sort((left, right) =>
-            {
-                if (left.id > right.id)
-                    return 1;
-                else if (left.id == right.id)
-                    return 0;
-                else
-                    return -1;
-            });
+            catch (Exception)
+            { }
+#if false
             /* id不连续时插入空的条目 */
             int count = items.Count;
             for (int i = 1; i < count; i++)
@@ -138,11 +172,13 @@ namespace AutoMaster
                     count++;
                 }
             }
+#endif
             return items;
         }
         public static List<ParamItem> ParamList_Init()
         {
             List<ParamItem> items = new List<ParamItem>();
+            /*
             items.Add(new ParamItem(0, "SystemPara.TargetVersion", "0", "", ""));
             items.Add(new ParamItem(1, "SystemPara.SoftwareVersion", "0", "", ""));
             items.Add(new ParamItem(2, "SystemPara.SerialNumber", "0", "", ""));
@@ -250,7 +286,7 @@ namespace AutoMaster
             items.Add(new ParamItem(104, "Battery.Full_Voltage_Level", "0", "/10", ""));
             items.Add(new ParamItem(105, "Battery.Empty_Voltage_Level", "0", "/10", ""));
             items.Add(new ParamItem(106, "Battery.Discharge_Time", "0", "", "min"));
-            items.Add(new ParamItem(107, "Battery.BDI_Reset_Percent", "0", "", "%"));
+            items.Add(new ParamItem(107, "Battery.BDI_Reset_Percent", "0", "", "%"));*/
             items.AddRange(ParamList_GetFromXml());
             return items;
         }
@@ -306,7 +342,7 @@ namespace AutoMaster
                         continue;
                     frame.head = stream[index];
                     frame.data_type = stream[index + 3];
-                    if (frame.data_type == 2)
+                    if ((frame.data_type & 0x0f) == 2)
                     {
                         frame.crc = stream[index + 6];
                         if (calculate_crc(stream.Skip(1).Take(5).ToArray(), 5) == frame.crc)
