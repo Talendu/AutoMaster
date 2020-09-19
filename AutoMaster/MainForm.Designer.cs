@@ -54,7 +54,6 @@
             this.btnClearData = new System.Windows.Forms.Button();
             this.checkBoxShowSend = new System.Windows.Forms.CheckBox();
             this.checkBoxAutoNewLine = new System.Windows.Forms.CheckBox();
-            this.tbxData = new System.Windows.Forms.RichTextBox();
             this.checkBoxShowInHex = new System.Windows.Forms.CheckBox();
             this.tbxReceiveCount = new System.Windows.Forms.TextBox();
             this.LabelReceiveCount = new System.Windows.Forms.Label();
@@ -102,6 +101,7 @@
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.fontDialog = new System.Windows.Forms.FontDialog();
+            this.tbxData = new System.Windows.Forms.TextBox();
             this.menuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageCom.SuspendLayout();
@@ -340,10 +340,10 @@
             this.GBoxMessageView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.GBoxMessageView.Controls.Add(this.tbxData);
             this.GBoxMessageView.Controls.Add(this.btnClearData);
             this.GBoxMessageView.Controls.Add(this.checkBoxShowSend);
             this.GBoxMessageView.Controls.Add(this.checkBoxAutoNewLine);
-            this.GBoxMessageView.Controls.Add(this.tbxData);
             this.GBoxMessageView.Controls.Add(this.checkBoxShowInHex);
             this.GBoxMessageView.Controls.Add(this.tbxReceiveCount);
             this.GBoxMessageView.Controls.Add(this.LabelReceiveCount);
@@ -392,21 +392,6 @@
             this.checkBoxAutoNewLine.Text = "自动换行";
             this.checkBoxAutoNewLine.UseVisualStyleBackColor = true;
             this.checkBoxAutoNewLine.CheckedChanged += new System.EventHandler(this.checkBox_CheckedChanged);
-            // 
-            // tbxData
-            // 
-            this.tbxData.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbxData.CausesValidation = false;
-            this.tbxData.Font = new System.Drawing.Font("SimHei", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.tbxData.Location = new System.Drawing.Point(6, 20);
-            this.tbxData.Name = "tbxData";
-            this.tbxData.ReadOnly = true;
-            this.tbxData.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
-            this.tbxData.Size = new System.Drawing.Size(728, 267);
-            this.tbxData.TabIndex = 29;
-            this.tbxData.Text = "";
             // 
             // checkBoxShowInHex
             // 
@@ -856,6 +841,18 @@
             this.openFileDialog.FileName = "*.log";
             this.openFileDialog.Filter = "log files|*.log|All files|*.*";
             // 
+            // tbxData
+            // 
+            this.tbxData.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbxData.Location = new System.Drawing.Point(7, 21);
+            this.tbxData.Multiline = true;
+            this.tbxData.Name = "tbxData";
+            this.tbxData.ReadOnly = true;
+            this.tbxData.Size = new System.Drawing.Size(727, 266);
+            this.tbxData.TabIndex = 32;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -919,7 +916,6 @@
         private System.Windows.Forms.Button btnClearData;
         private System.Windows.Forms.CheckBox checkBoxShowSend;
         private System.Windows.Forms.CheckBox checkBoxAutoNewLine;
-        private System.Windows.Forms.RichTextBox tbxData;
         private System.Windows.Forms.CheckBox checkBoxShowInHex;
         private System.Windows.Forms.TextBox tbxReceiveCount;
         private System.Windows.Forms.Label LabelReceiveCount;
@@ -965,6 +961,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
+        private System.Windows.Forms.TextBox tbxData;
     }
 }
 

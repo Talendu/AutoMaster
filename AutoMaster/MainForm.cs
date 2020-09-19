@@ -460,8 +460,9 @@ namespace AutoMaster
                         {
                             if (checkBoxShowSend.CheckState == CheckState.Checked)
                             {
-                                tbxData.SelectionStart = tbxData.TextLength;
-                                tbxData.SelectionColor = Color.OrangeRed;
+                                //tbxData.SelectionStart = tbxData.TextLength;
+                                //tbxData.SelectionColor = Color.OrangeRed;
+                                tbxData.AppendText("发:");
                                 tbxData.AppendText((string)message.GetObj());
                                 if (checkBoxAutoNewLine.CheckState == CheckState.Checked)
                                 {
@@ -473,8 +474,9 @@ namespace AutoMaster
                         }
                     case 2:
                         {
-                            tbxData.SelectionStart = tbxData.TextLength;
-                            tbxData.SelectionColor = Color.Blue;
+                            //tbxData.SelectionStart = tbxData.TextLength;
+                            //tbxData.SelectionColor = Color.Blue;
+                            tbxData.AppendText("收:");
                             tbxData.AppendText((string)message.GetObj());
                             if (checkBoxAutoNewLine.CheckState == CheckState.Checked)
                             {
@@ -485,8 +487,9 @@ namespace AutoMaster
                         }
                     case 3:
                         {
-                            tbxData.SelectionStart = tbxData.TextLength;
-                            tbxData.SelectionColor = Color.Red;
+                            //tbxData.SelectionStart = tbxData.TextLength;
+                            //tbxData.SelectionColor = Color.Red;
+                            tbxData.AppendText("错误: ");
                             tbxData.AppendText((string)message.GetObj());
                             tbxData.AppendText("\r\n");
                             //tbxData.ScrollToCaret();
@@ -494,8 +497,9 @@ namespace AutoMaster
                         }
                     case 4:
                         {
-                            tbxData.SelectionStart = tbxData.TextLength;
-                            tbxData.SelectionColor = Color.Black;
+                            //tbxData.SelectionStart = tbxData.TextLength;
+                            //tbxData.SelectionColor = Color.Black;
+                            tbxData.AppendText("警告: ");
                             tbxData.AppendText((string)message.GetObj());
                             break;
                         }
