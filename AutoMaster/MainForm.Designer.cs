@@ -36,9 +36,6 @@
             this.Menu_FIle_Open = new System.Windows.Forms.ToolStripMenuItem();
             this.Menu_Setting = new System.Windows.Forms.ToolStripMenuItem();
             this.Menu_Setting_Font = new System.Windows.Forms.ToolStripMenuItem();
-            this.Menu_View = new System.Windows.Forms.ToolStripMenuItem();
-            this.Menu_VIew_Page = new System.Windows.Forms.ToolStripMenuItem();
-            this.Menu_View_Vertical = new System.Windows.Forms.ToolStripMenuItem();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPageCom = new System.Windows.Forms.TabPage();
             this.GBoxSendData = new System.Windows.Forms.GroupBox();
@@ -51,6 +48,7 @@
             this.checkBoxSendRegular = new System.Windows.Forms.CheckBox();
             this.LabelCycle = new System.Windows.Forms.Label();
             this.GBoxMessageView = new System.Windows.Forms.GroupBox();
+            this.tbxData = new System.Windows.Forms.TextBox();
             this.btnClearData = new System.Windows.Forms.Button();
             this.checkBoxShowSend = new System.Windows.Forms.CheckBox();
             this.checkBoxAutoNewLine = new System.Windows.Forms.CheckBox();
@@ -68,7 +66,6 @@
             this.columnHeader4 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader5 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.button1 = new System.Windows.Forms.Button();
             this.dataGridView_param = new System.Windows.Forms.DataGridView();
             this.paramDataView_id = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.paramDataView_name = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -101,7 +98,6 @@
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.fontDialog = new System.Windows.Forms.FontDialog();
-            this.tbxData = new System.Windows.Forms.TextBox();
             this.menuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageCom.SuspendLayout();
@@ -121,8 +117,7 @@
             // 
             this.menuStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.Menu_File,
-            this.Menu_Setting,
-            this.Menu_View});
+            this.Menu_Setting});
             this.menuStrip.Location = new System.Drawing.Point(0, 0);
             this.menuStrip.Name = "menuStrip";
             this.menuStrip.Size = new System.Drawing.Size(784, 25);
@@ -169,30 +164,6 @@
             this.Menu_Setting_Font.Text = "字体";
             this.Menu_Setting_Font.Click += new System.EventHandler(this.Menu_Setting_Font_Click);
             // 
-            // Menu_View
-            // 
-            this.Menu_View.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.Menu_VIew_Page,
-            this.Menu_View_Vertical});
-            this.Menu_View.Name = "Menu_View";
-            this.Menu_View.Size = new System.Drawing.Size(44, 21);
-            this.Menu_View.Text = "视图";
-            // 
-            // Menu_VIew_Page
-            // 
-            this.Menu_VIew_Page.Name = "Menu_VIew_Page";
-            this.Menu_VIew_Page.Size = new System.Drawing.Size(124, 22);
-            this.Menu_VIew_Page.Text = "分页";
-            this.Menu_VIew_Page.Click += new System.EventHandler(this.Menu_VIew_Page_Click);
-            // 
-            // Menu_View_Vertical
-            // 
-            this.Menu_View_Vertical.Checked = true;
-            this.Menu_View_Vertical.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.Menu_View_Vertical.Name = "Menu_View_Vertical";
-            this.Menu_View_Vertical.Size = new System.Drawing.Size(124, 22);
-            this.Menu_View_Vertical.Text = "垂直分栏";
-            // 
             // tabControl1
             // 
             this.tabControl1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -203,10 +174,10 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Location = new System.Drawing.Point(12, 28);
+            this.tabControl1.Location = new System.Drawing.Point(12, 62);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(760, 485);
+            this.tabControl1.Size = new System.Drawing.Size(760, 451);
             this.tabControl1.TabIndex = 1;
             // 
             // tabPageCom
@@ -356,6 +327,19 @@
             this.GBoxMessageView.TabStop = false;
             this.GBoxMessageView.Text = "数据显示";
             // 
+            // tbxData
+            // 
+            this.tbxData.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbxData.Location = new System.Drawing.Point(7, 21);
+            this.tbxData.Multiline = true;
+            this.tbxData.Name = "tbxData";
+            this.tbxData.ReadOnly = true;
+            this.tbxData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.tbxData.Size = new System.Drawing.Size(727, 266);
+            this.tbxData.TabIndex = 32;
+            // 
             // btnClearData
             // 
             this.btnClearData.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -453,19 +437,18 @@
             // 
             // tabPageParamShow
             // 
-            this.tabPageParamShow.Controls.Add(this.btn_startCom);
             this.tabPageParamShow.Controls.Add(this.listView_State);
             this.tabPageParamShow.Location = new System.Drawing.Point(4, 22);
             this.tabPageParamShow.Name = "tabPageParamShow";
             this.tabPageParamShow.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageParamShow.Size = new System.Drawing.Size(752, 459);
+            this.tabPageParamShow.Size = new System.Drawing.Size(752, 425);
             this.tabPageParamShow.TabIndex = 1;
             this.tabPageParamShow.Text = "参数显示";
             this.tabPageParamShow.UseVisualStyleBackColor = true;
             // 
             // btn_startCom
             // 
-            this.btn_startCom.Location = new System.Drawing.Point(6, 6);
+            this.btn_startCom.Location = new System.Drawing.Point(12, 28);
             this.btn_startCom.Name = "btn_startCom";
             this.btn_startCom.Size = new System.Drawing.Size(75, 28);
             this.btn_startCom.TabIndex = 1;
@@ -486,7 +469,7 @@
             this.columnHeader5});
             this.listView_State.FullRowSelect = true;
             this.listView_State.GridLines = true;
-            this.listView_State.Location = new System.Drawing.Point(6, 40);
+            this.listView_State.Location = new System.Drawing.Point(6, 6);
             this.listView_State.Name = "listView_State";
             this.listView_State.Size = new System.Drawing.Size(740, 413);
             this.listView_State.TabIndex = 0;
@@ -520,24 +503,13 @@
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.button1);
             this.tabPage1.Controls.Add(this.dataGridView_param);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(752, 459);
+            this.tabPage1.Size = new System.Drawing.Size(752, 425);
             this.tabPage1.TabIndex = 2;
             this.tabPage1.Text = "参数显示";
             this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(4, 6);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 28);
-            this.button1.TabIndex = 2;
-            this.button1.Text = "开始通信";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.btn_startCom_Click);
             // 
             // dataGridView_param
             // 
@@ -551,10 +523,10 @@
             this.paramDataView_value,
             this.paramDataView_unit,
             this.paramDataView_description});
-            this.dataGridView_param.Location = new System.Drawing.Point(4, 40);
+            this.dataGridView_param.Location = new System.Drawing.Point(4, 3);
             this.dataGridView_param.Name = "dataGridView_param";
             this.dataGridView_param.RowTemplate.Height = 23;
-            this.dataGridView_param.Size = new System.Drawing.Size(745, 416);
+            this.dataGridView_param.Size = new System.Drawing.Size(745, 419);
             this.dataGridView_param.TabIndex = 0;
             this.dataGridView_param.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_param_CellEndEdit);
             this.dataGridView_param.SortCompare += new System.Windows.Forms.DataGridViewSortCompareEventHandler(this.dataGridView_param_SortCompare);
@@ -605,7 +577,7 @@
             this.tabPage2.Controls.Add(this.dataGridView_di);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(752, 459);
+            this.tabPage2.Size = new System.Drawing.Size(752, 425);
             this.tabPage2.TabIndex = 3;
             this.tabPage2.Text = "di";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -625,7 +597,7 @@
             this.dataGridView_di.Location = new System.Drawing.Point(4, 3);
             this.dataGridView_di.Name = "dataGridView_di";
             this.dataGridView_di.RowTemplate.Height = 23;
-            this.dataGridView_di.Size = new System.Drawing.Size(745, 453);
+            this.dataGridView_di.Size = new System.Drawing.Size(745, 419);
             this.dataGridView_di.TabIndex = 1;
             // 
             // dataGridViewTextBoxColumn1
@@ -674,7 +646,7 @@
             this.tabPage3.Controls.Add(this.dataGridView_do);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(752, 459);
+            this.tabPage3.Size = new System.Drawing.Size(752, 425);
             this.tabPage3.TabIndex = 4;
             this.tabPage3.Text = "do";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -694,7 +666,7 @@
             this.dataGridView_do.Location = new System.Drawing.Point(4, 3);
             this.dataGridView_do.Name = "dataGridView_do";
             this.dataGridView_do.RowTemplate.Height = 23;
-            this.dataGridView_do.Size = new System.Drawing.Size(745, 453);
+            this.dataGridView_do.Size = new System.Drawing.Size(745, 419);
             this.dataGridView_do.TabIndex = 2;
             this.dataGridView_do.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_param_CellEndEdit);
             // 
@@ -837,27 +809,16 @@
             this.openFileDialog.FileName = "*.log";
             this.openFileDialog.Filter = "log files|*.log|All files|*.*";
             // 
-            // tbxData
-            // 
-            this.tbxData.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbxData.Location = new System.Drawing.Point(7, 21);
-            this.tbxData.Multiline = true;
-            this.tbxData.Name = "tbxData";
-            this.tbxData.ReadOnly = true;
-            this.tbxData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbxData.Size = new System.Drawing.Size(727, 266);
-            this.tbxData.TabIndex = 32;
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(784, 539);
+            this.Controls.Add(this.btn_startCom);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.menuStrip);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip;
             this.Name = "MainForm";
             this.Text = "AutoMaster";
@@ -893,9 +854,6 @@
         private System.Windows.Forms.ToolStripMenuItem Menu_Setting;
         private System.Windows.Forms.ToolStripMenuItem Menu_FIle_Open;
         private System.Windows.Forms.ToolStripMenuItem Menu_Setting_Font;
-        private System.Windows.Forms.ToolStripMenuItem Menu_View;
-        private System.Windows.Forms.ToolStripMenuItem Menu_VIew_Page;
-        private System.Windows.Forms.ToolStripMenuItem Menu_View_Vertical;
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPageCom;
         private System.Windows.Forms.TabPage tabPageParamShow;
@@ -938,7 +896,6 @@
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.DataGridView dataGridView_param;
         private System.Windows.Forms.Button btn_startCom;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.DataGridView dataGridView_di;
         private System.Windows.Forms.TabPage tabPage3;

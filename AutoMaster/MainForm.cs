@@ -301,7 +301,8 @@ namespace AutoMaster
             }
             else
             {
-                return null;
+                return dataGridView_di;
+                //return null;
             }
         }
 
@@ -990,7 +991,10 @@ namespace AutoMaster
                 tbxData.Font = fontDialog.Font;
                 tbxSend.Font = fontDialog.Font;
                 listView_State.Font = fontDialog.Font;
-                MessageBox.Show(fontDialog.Font.ToString());
+                dataGridView_di.Font = fontDialog.Font;
+                dataGridView_do.Font = fontDialog.Font;
+                dataGridView_param.Font = fontDialog.Font;
+                //MessageBox.Show(fontDialog.Font.ToString());
             }
 
         }
