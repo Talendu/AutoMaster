@@ -32,6 +32,10 @@ namespace AutoMaster
         List<ParamList.ParamItem> paramList;
         Thread RegularSendThread = null;
         Thread UpdateUiThread = null;
+        Thread myReaderThread = null;
+        AutoResetEvent myResetEvent;
+        Semaphore sem;
+        Semaphore sem_append;
 
         StringBuilder displayBuffer = new StringBuilder();
 
@@ -169,8 +173,11 @@ namespace AutoMaster
             UpdateUiThread = new Thread(new ThreadStart(updateUiMethod));
             UpdateUiThread.Start();
             tabControl1.TabPages.RemoveAt(1);
-
-
+            myReaderThread = new Thread(new ThreadStart(MyReadThreadProc));
+            myResetEvent = new AutoResetEvent(false);
+            sem = new Semaphore(1, 1);
+            sem_append = new Semaphore(1, 1);
+            myReaderThread.Start();
         }
 
         void updateUiMethod()
@@ -179,10 +186,17 @@ namespace AutoMaster
             {
                 try
                 {
+
+                    /*
                     for (int i = paramQuaua.Count; i > 0; i--)
                     {
                         ParamList.ParamItem item;
                         paramQuaua.TryDequeue(out item);
+                        listView_State_Update(item);
+                    }
+                    */
+                    foreach (ParamList.ParamItem item in paramList)
+                    {
                         listView_State_Update(item);
                     }
 
@@ -193,7 +207,7 @@ namespace AutoMaster
                     }));
                     MyMessage msg;
                     bool update = false;
-                    if (msgList.Count > 0)
+                    //if (msgList.Count > 0)
                     {
                         update = true;
                     }
@@ -209,8 +223,10 @@ namespace AutoMaster
                         {
                             //tbxData.SelectionStart = tbxData.TextLength;
                             //tbxData.ScrollToCaret();
+                            sem_append.WaitOne();
                             tbxData.AppendText(displayBuffer.ToString());
                             displayBuffer.Clear();
+                            sem_append.Release();
                             GC.Collect();
 
                         }));
@@ -220,45 +236,44 @@ namespace AutoMaster
                 catch (Exception) { }
             }
         }
-        
-        private void serialDataReceive(object sender, SerialDataReceivedEventArgs e)
+        private byte[] rxBuff;
+        private void MyReadThreadProc()
         {
-            bool find = false;
-            byte[] buff = new byte[serialPort.BytesToRead];
-            serialPort.Read(buff, 0, buff.Length);
-            rxBuffer.AddRange(buff);
-            ReceiveCount += buff.Length;
-
-            if (checkBoxShowInHex.CheckState == CheckState.Checked)
+            int i;
+            while (true)
             {
-                ShowBytes(buff, 2);
-            }
-            else
-            {
-                ShowBytes(buff, 1);
-            }
-
-            foreach (ParamList.ParamItem item in ParamList.ParamList_Update(paramList, rxBuffer))
-            {
-                find = false;
-                if (connecting)
+                myResetEvent.WaitOne();
+                sem.WaitOne();
+                rxBuffer.AddRange(rxBuff);
+                ReceiveCount += rxBuff.Length;
+                sem.Release();
+                if (configInNvm.showInHex)
                 {
-                    serialHexTransmission("5a 00 00 80 00 0a");
+                    ShowBytes(rxBuff, 2);
                 }
-                foreach (ParamList.ParamItem queueItem in paramQuaua)
+                else
                 {
-                    if (queueItem.id == item.id)
+                    ShowBytes(rxBuff, 1);
+                }
+
+                for (i = ParamList.ParamList_Update(paramList, rxBuffer); i > 0; i++)
+                {
+                    if (connecting)
                     {
-                        queueItem.value = item.value;
-                        find = true;
-                        break;
+                        serialHexTransmission("5a 00 00 80 00 0a");
                     }
                 }
-                if (find == false)
-                {
-                    paramQuaua.Enqueue(item);
-                }
             }
+        }
+        private void serialDataReceive(object sender, SerialDataReceivedEventArgs e)
+        {
+            sem.WaitOne();
+            rxBuff = new byte[serialPort.BytesToRead];
+            serialPort.Read(rxBuff, 0, rxBuff.Length);
+            
+            sem.Release();
+            myResetEvent.Set();
+
         }
         private void listView_State_Update(List<ParamList.ParamItem> list)
         {
@@ -309,6 +324,7 @@ namespace AutoMaster
         private void listView_State_Update(ParamList.ParamItem item)
         {
             int listIndex = ParamList.FindById(paramList, item.id);
+            int i;
             string parentValue = null;
             DataGridView grid = findGridViewById(item.id);
             if (listIndex < 0)
@@ -323,20 +339,24 @@ namespace AutoMaster
             {
                 try
                 {
-                    listView_State.Items[listIndex].SubItems[2].Text = item.value;
-                    for (listIndex = 0; listIndex < grid.Rows.Count; listIndex++)
+                    parentValue = paramList[listIndex].value;
+                    if (parentValue == null || parentValue.Length == 0)
                     {
-                        if (grid.Rows[listIndex].Cells[0].Value.Equals(item.id.ToString()) &&
-                            !grid.Rows[listIndex].Cells[2].IsInEditMode)
+                        return;
+                    }
+                    //listView_State.Items[listIndex].SubItems[2].Text = item.value;
+                    for (i = 0; i < grid.Rows.Count; i++)
+                    {
+                        if (grid.Rows[i].Cells[0].Value.Equals(item.id.ToString()) &&
+                            !grid.Rows[i].Cells[2].IsInEditMode)
                         {
-                            string name = grid.Rows[listIndex].Cells[1].Value.ToString().Split(':')[0];
-                            if (name.Substring(0, 3).Equals("bit")
-                                && parentValue != null
-                                && parentValue.Length > 0)
+                            string name = grid.Rows[i].Cells[1].Value.ToString().Split(':')[0];
+
+                            if (name.Substring(0, 3).Equals("bit"))
                             {
                                 int shift;
                                 int width = 0;
-                                int oldValue = Convert.ToInt32(paramList[listIndex].value);
+                                int oldValue = Convert.ToInt32(parentValue);
                                 if (name.Substring(3, 1).Equals("["))
                                 {
                                     shift = Convert.ToInt32(name.Substring(3, 2));
@@ -347,12 +367,11 @@ namespace AutoMaster
                                     shift = Convert.ToInt32(name.Substring(3, 2));
                                     width = 1;
                                 }
-                                grid.Rows[listIndex].Cells[2].Value = (Convert.ToUInt32(parentValue) >> shift) & ((1 << width) - 1);
+                                grid.Rows[i].Cells[2].Value = (Convert.ToUInt32(parentValue) >> shift) & ((1 << width) - 1);
                             }
                             else
                             {
-                                grid.Rows[listIndex].Cells[2].Value = item.value;
-                                parentValue = item.value;
+                                grid.Rows[i].Cells[2].Value = parentValue;
                             }
                         }
                     }
@@ -376,7 +395,7 @@ namespace AutoMaster
             {
                 MyMessage msg = new MyMessage(1);
                 msg.SetObj(Encoding.Default.GetString(buff));
-                msgList.Enqueue(msg);
+                ShowMessage(msg);
             }
             TransmissionCount += buff.Length;
             serialPort.Write(buff, 0, buff.Length);
@@ -400,7 +419,7 @@ namespace AutoMaster
             {
                 MyMessage msg = new MyMessage(1);
                 msg.SetObj(data);
-                msgList.Enqueue(msg);
+                ShowMessage(msg);
             }
         }
 
@@ -446,7 +465,7 @@ namespace AutoMaster
             MyMessage message = new MyMessage(2);
             message.SetObj(receive);
 
-            msgList.Enqueue(message);
+            ShowMessage(message);
         }
         
         private void ShowMessage(object msg)
@@ -456,60 +475,70 @@ namespace AutoMaster
             {
                 return;
             }
-            this.Invoke((EventHandler)(delegate
+            sem_append.WaitOne();
+            switch (message.GetWhat())
             {
-
-                switch (message.GetWhat())
+            case 1:
                 {
-                    case 1:
+                    if (checkBoxShowSend.CheckState == CheckState.Checked)
+                    {
+                        //tbxData.SelectionStart = tbxData.TextLength;
+                        //tbxData.SelectionColor = Color.OrangeRed;
+                        if (configInNvm.timeStamp)
                         {
-                            if (checkBoxShowSend.CheckState == CheckState.Checked)
-                            {
-                                //tbxData.SelectionStart = tbxData.TextLength;
-                                //tbxData.SelectionColor = Color.OrangeRed;
-                                displayBuffer.Append("发:");
-                                displayBuffer.Append((string)message.GetObj());
-                                if (checkBoxAutoNewLine.CheckState == CheckState.Checked)
-                                {
-                                    displayBuffer.Append("\r\n");
-                                }
-                                //tbxData.ScrollToCaret();
-                            }
-                            break;
+                            displayBuffer.Append(DateTime.Now.ToString("hh:mm:ss.fff") + " ");
                         }
-                    case 2:
+                        displayBuffer.Append("发: ");
+                        displayBuffer.Append((string)message.GetObj());
+                        if (checkBoxAutoNewLine.CheckState == CheckState.Checked)
                         {
-                            //tbxData.SelectionStart = tbxData.TextLength;
-                            //tbxData.SelectionColor = Color.Blue;
-                            displayBuffer.Append("收:");
-                            displayBuffer.Append((string)message.GetObj());
-                            if (checkBoxAutoNewLine.CheckState == CheckState.Checked)
-                            {
-                                displayBuffer.Append("\r\n");
-                            }
-                            //tbxData.ScrollToCaret();
-                            break;
-                        }
-                    case 3:
-                        {
-                            //tbxData.SelectionStart = tbxData.TextLength;
-                            //tbxData.SelectionColor = Color.Red;
-                            displayBuffer.Append("错误: ");
-                            displayBuffer.Append((string)message.GetObj());
                             displayBuffer.Append("\r\n");
-                            //tbxData.ScrollToCaret();
-                            break;
                         }
-                    case 4:
-                        {
-                            //tbxData.SelectionStart = tbxData.TextLength;
-                            //tbxData.SelectionColor = Color.Black;
-                            displayBuffer.Append("警告: ");
-                            displayBuffer.Append((string)message.GetObj());
-                            break;
-                        }
+                        //tbxData.ScrollToCaret();
+                    }
+                    break;
                 }
-            }));
+            case 2:
+                {
+                    //tbxData.SelectionStart = tbxData.TextLength;
+                    //tbxData.SelectionColor = Color.Blue;
+                    if (configInNvm.timeStamp)
+                    {
+                        displayBuffer.Append(DateTime.Now.ToString("hh:mm:ss.fff") + " ");
+                    }
+                    displayBuffer.Append("收: ");
+                    displayBuffer.Append((string)message.GetObj());
+                    if (checkBoxAutoNewLine.CheckState == CheckState.Checked)
+                    {
+                        displayBuffer.Append("\r\n");
+                    }
+                    //tbxData.ScrollToCaret();
+                    break;
+                }
+            case 3:
+                {
+                    //tbxData.SelectionStart = tbxData.TextLength;
+                    //tbxData.SelectionColor = Color.Red;
+                    if (configInNvm.timeStamp)
+                        displayBuffer.Append(DateTime.Now.TimeOfDay.ToString("hh:mm:ss.fff") + " ");
+                    displayBuffer.Append("错误: ");
+                    displayBuffer.Append((string)message.GetObj());
+                    displayBuffer.Append("\r\n");
+                    //tbxData.ScrollToCaret();
+                    break;
+                }
+            case 4:
+                {
+                    //tbxData.SelectionStart = tbxData.TextLength;
+                    //tbxData.SelectionColor = Color.Black;
+                    if (configInNvm.timeStamp)
+                        displayBuffer.Append(DateTime.Now.TimeOfDay.ToString("hh:mm:ss.fff") + " ");
+                    displayBuffer.Append("警告: ");
+                    displayBuffer.Append((string)message.GetObj());
+                    break;
+                }
+            }
+            sem_append.Release();
         }
 
         private void statusStrip_DropDownItemClicked(object sender, ToolStripItemClickedEventArgs e)
@@ -828,6 +857,7 @@ namespace AutoMaster
             configInNvm.showSend = checkBoxShowSend.Checked;
             configInNvm.sendInHex = checkBoxSendHex.Checked;
             configInNvm.sendNewLine = checkBoxSendNewLine.Checked;
+            configInNvm.timeStamp = checkBoxTimeStamp.Checked;
         }
 
         private void checkBoxSendRegular_CheckedChanged(object sender, EventArgs e)
@@ -903,7 +933,7 @@ namespace AutoMaster
                 MyMessage msg = new MyMessage(4);
                 btnClearData_Click(null, null);
                 msg.SetObj(fileData);
-                msgList.Enqueue(msg);
+                ShowMessage(msg);
             }
         }
 
@@ -979,6 +1009,7 @@ namespace AutoMaster
                 Thread.Sleep(100);
                 serialPort.Dispose();
                 Thread.Sleep(100);
+                myReaderThread.Abort();
             }
             catch (Exception)
             { }
@@ -1117,7 +1148,7 @@ namespace AutoMaster
                 }
                 catch (Exception) { }
             }
-            paramQuaua.Enqueue(paramList[listIndex]);
+            //paramQuaua.Enqueue(paramList[listIndex]);
         }
     }
 }

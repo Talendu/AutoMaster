@@ -58,7 +58,6 @@
             this.tbxSendCount = new System.Windows.Forms.TextBox();
             this.LabelSendCount = new System.Windows.Forms.Label();
             this.tabPageParamShow = new System.Windows.Forms.TabPage();
-            this.btn_startCom = new System.Windows.Forms.Button();
             this.listView_State = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnHeader2 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -86,6 +85,7 @@
             this.dataGridViewTextBoxColumn8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.btn_startCom = new System.Windows.Forms.Button();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip_Com = new System.Windows.Forms.ToolStripDropDownButton();
             this.toolStripStatusLabel3 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -98,6 +98,7 @@
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.fontDialog = new System.Windows.Forms.FontDialog();
+            this.checkBoxTimeStamp = new System.Windows.Forms.CheckBox();
             this.menuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageCom.SuspendLayout();
@@ -187,7 +188,7 @@
             this.tabPageCom.Location = new System.Drawing.Point(4, 22);
             this.tabPageCom.Name = "tabPageCom";
             this.tabPageCom.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageCom.Size = new System.Drawing.Size(752, 459);
+            this.tabPageCom.Size = new System.Drawing.Size(752, 425);
             this.tabPageCom.TabIndex = 0;
             this.tabPageCom.Text = "通讯";
             this.tabPageCom.UseVisualStyleBackColor = true;
@@ -204,9 +205,9 @@
             this.GBoxSendData.Controls.Add(this.checkBoxSendHex);
             this.GBoxSendData.Controls.Add(this.checkBoxSendRegular);
             this.GBoxSendData.Controls.Add(this.LabelCycle);
-            this.GBoxSendData.Location = new System.Drawing.Point(4, 340);
+            this.GBoxSendData.Location = new System.Drawing.Point(4, 295);
             this.GBoxSendData.Name = "GBoxSendData";
-            this.GBoxSendData.Size = new System.Drawing.Size(742, 113);
+            this.GBoxSendData.Size = new System.Drawing.Size(742, 124);
             this.GBoxSendData.TabIndex = 2;
             this.GBoxSendData.TabStop = false;
             this.GBoxSendData.Text = "数据发送";
@@ -215,7 +216,7 @@
             // 
             this.btnClearSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnClearSend.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.btnClearSend.Location = new System.Drawing.Point(661, 52);
+            this.btnClearSend.Location = new System.Drawing.Point(661, 63);
             this.btnClearSend.Name = "btnClearSend";
             this.btnClearSend.Size = new System.Drawing.Size(75, 28);
             this.btnClearSend.TabIndex = 34;
@@ -245,14 +246,14 @@
             this.tbxSend.Multiline = true;
             this.tbxSend.Name = "tbxSend";
             this.tbxSend.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbxSend.Size = new System.Drawing.Size(647, 60);
+            this.tbxSend.Size = new System.Drawing.Size(647, 71);
             this.tbxSend.TabIndex = 27;
             // 
             // tbxCycle
             // 
             this.tbxCycle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.tbxCycle.CausesValidation = false;
-            this.tbxCycle.Location = new System.Drawing.Point(271, 86);
+            this.tbxCycle.Location = new System.Drawing.Point(271, 97);
             this.tbxCycle.MaxLength = 10;
             this.tbxCycle.Name = "tbxCycle";
             this.tbxCycle.Size = new System.Drawing.Size(48, 21);
@@ -263,7 +264,7 @@
             // 
             this.checkBoxSendNewLine.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxSendNewLine.AutoSize = true;
-            this.checkBoxSendNewLine.Location = new System.Drawing.Point(80, 88);
+            this.checkBoxSendNewLine.Location = new System.Drawing.Point(80, 99);
             this.checkBoxSendNewLine.Name = "checkBoxSendNewLine";
             this.checkBoxSendNewLine.Size = new System.Drawing.Size(72, 16);
             this.checkBoxSendNewLine.TabIndex = 31;
@@ -275,7 +276,7 @@
             // 
             this.checkBoxSendHex.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxSendHex.AutoSize = true;
-            this.checkBoxSendHex.Location = new System.Drawing.Point(8, 88);
+            this.checkBoxSendHex.Location = new System.Drawing.Point(8, 99);
             this.checkBoxSendHex.Name = "checkBoxSendHex";
             this.checkBoxSendHex.Size = new System.Drawing.Size(66, 16);
             this.checkBoxSendHex.TabIndex = 30;
@@ -287,7 +288,7 @@
             // 
             this.checkBoxSendRegular.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxSendRegular.AutoSize = true;
-            this.checkBoxSendRegular.Location = new System.Drawing.Point(158, 88);
+            this.checkBoxSendRegular.Location = new System.Drawing.Point(158, 99);
             this.checkBoxSendRegular.Name = "checkBoxSendRegular";
             this.checkBoxSendRegular.Size = new System.Drawing.Size(72, 16);
             this.checkBoxSendRegular.TabIndex = 32;
@@ -299,7 +300,7 @@
             // 
             this.LabelCycle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.LabelCycle.AutoSize = true;
-            this.LabelCycle.Location = new System.Drawing.Point(236, 89);
+            this.LabelCycle.Location = new System.Drawing.Point(236, 100);
             this.LabelCycle.Name = "LabelCycle";
             this.LabelCycle.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.LabelCycle.Size = new System.Drawing.Size(29, 12);
@@ -313,6 +314,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.GBoxMessageView.Controls.Add(this.tbxData);
             this.GBoxMessageView.Controls.Add(this.btnClearData);
+            this.GBoxMessageView.Controls.Add(this.checkBoxTimeStamp);
             this.GBoxMessageView.Controls.Add(this.checkBoxShowSend);
             this.GBoxMessageView.Controls.Add(this.checkBoxAutoNewLine);
             this.GBoxMessageView.Controls.Add(this.checkBoxShowInHex);
@@ -322,7 +324,7 @@
             this.GBoxMessageView.Controls.Add(this.LabelSendCount);
             this.GBoxMessageView.Location = new System.Drawing.Point(6, 6);
             this.GBoxMessageView.Name = "GBoxMessageView";
-            this.GBoxMessageView.Size = new System.Drawing.Size(740, 328);
+            this.GBoxMessageView.Size = new System.Drawing.Size(740, 283);
             this.GBoxMessageView.TabIndex = 1;
             this.GBoxMessageView.TabStop = false;
             this.GBoxMessageView.Text = "数据显示";
@@ -337,13 +339,13 @@
             this.tbxData.Name = "tbxData";
             this.tbxData.ReadOnly = true;
             this.tbxData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbxData.Size = new System.Drawing.Size(727, 266);
+            this.tbxData.Size = new System.Drawing.Size(727, 221);
             this.tbxData.TabIndex = 32;
             // 
             // btnClearData
             // 
             this.btnClearData.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearData.Location = new System.Drawing.Point(659, 293);
+            this.btnClearData.Location = new System.Drawing.Point(659, 248);
             this.btnClearData.Name = "btnClearData";
             this.btnClearData.Size = new System.Drawing.Size(75, 28);
             this.btnClearData.TabIndex = 0;
@@ -357,7 +359,7 @@
             this.checkBoxShowSend.AutoSize = true;
             this.checkBoxShowSend.Checked = true;
             this.checkBoxShowSend.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxShowSend.Location = new System.Drawing.Point(156, 300);
+            this.checkBoxShowSend.Location = new System.Drawing.Point(156, 255);
             this.checkBoxShowSend.Name = "checkBoxShowSend";
             this.checkBoxShowSend.Size = new System.Drawing.Size(72, 16);
             this.checkBoxShowSend.TabIndex = 31;
@@ -369,7 +371,7 @@
             // 
             this.checkBoxAutoNewLine.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxAutoNewLine.AutoSize = true;
-            this.checkBoxAutoNewLine.Location = new System.Drawing.Point(78, 300);
+            this.checkBoxAutoNewLine.Location = new System.Drawing.Point(78, 255);
             this.checkBoxAutoNewLine.Name = "checkBoxAutoNewLine";
             this.checkBoxAutoNewLine.Size = new System.Drawing.Size(72, 16);
             this.checkBoxAutoNewLine.TabIndex = 30;
@@ -381,7 +383,7 @@
             // 
             this.checkBoxShowInHex.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxShowInHex.AutoSize = true;
-            this.checkBoxShowInHex.Location = new System.Drawing.Point(6, 300);
+            this.checkBoxShowInHex.Location = new System.Drawing.Point(6, 255);
             this.checkBoxShowInHex.Name = "checkBoxShowInHex";
             this.checkBoxShowInHex.Size = new System.Drawing.Size(66, 16);
             this.checkBoxShowInHex.TabIndex = 28;
@@ -393,7 +395,7 @@
             // 
             this.tbxReceiveCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.tbxReceiveCount.CausesValidation = false;
-            this.tbxReceiveCount.Location = new System.Drawing.Point(358, 298);
+            this.tbxReceiveCount.Location = new System.Drawing.Point(469, 253);
             this.tbxReceiveCount.Name = "tbxReceiveCount";
             this.tbxReceiveCount.ReadOnly = true;
             this.tbxReceiveCount.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -405,7 +407,7 @@
             this.LabelReceiveCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.LabelReceiveCount.AutoSize = true;
             this.LabelReceiveCount.ForeColor = System.Drawing.Color.Blue;
-            this.LabelReceiveCount.Location = new System.Drawing.Point(323, 301);
+            this.LabelReceiveCount.Location = new System.Drawing.Point(434, 256);
             this.LabelReceiveCount.Name = "LabelReceiveCount";
             this.LabelReceiveCount.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.LabelReceiveCount.Size = new System.Drawing.Size(29, 12);
@@ -416,7 +418,7 @@
             // 
             this.tbxSendCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.tbxSendCount.CausesValidation = false;
-            this.tbxSendCount.Location = new System.Drawing.Point(269, 298);
+            this.tbxSendCount.Location = new System.Drawing.Point(380, 253);
             this.tbxSendCount.Name = "tbxSendCount";
             this.tbxSendCount.ReadOnly = true;
             this.tbxSendCount.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -428,7 +430,7 @@
             this.LabelSendCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.LabelSendCount.AutoSize = true;
             this.LabelSendCount.ForeColor = System.Drawing.Color.OrangeRed;
-            this.LabelSendCount.Location = new System.Drawing.Point(234, 301);
+            this.LabelSendCount.Location = new System.Drawing.Point(345, 256);
             this.LabelSendCount.Name = "LabelSendCount";
             this.LabelSendCount.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.LabelSendCount.Size = new System.Drawing.Size(29, 12);
@@ -445,16 +447,6 @@
             this.tabPageParamShow.TabIndex = 1;
             this.tabPageParamShow.Text = "参数显示";
             this.tabPageParamShow.UseVisualStyleBackColor = true;
-            // 
-            // btn_startCom
-            // 
-            this.btn_startCom.Location = new System.Drawing.Point(12, 28);
-            this.btn_startCom.Name = "btn_startCom";
-            this.btn_startCom.Size = new System.Drawing.Size(75, 28);
-            this.btn_startCom.TabIndex = 1;
-            this.btn_startCom.Text = "开始通信";
-            this.btn_startCom.UseVisualStyleBackColor = true;
-            this.btn_startCom.Click += new System.EventHandler(this.btn_startCom_Click);
             // 
             // listView_State
             // 
@@ -710,6 +702,16 @@
             this.dataGridViewTextBoxColumn10.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.dataGridViewTextBoxColumn10.Width = 35;
             // 
+            // btn_startCom
+            // 
+            this.btn_startCom.Location = new System.Drawing.Point(12, 28);
+            this.btn_startCom.Name = "btn_startCom";
+            this.btn_startCom.Size = new System.Drawing.Size(75, 28);
+            this.btn_startCom.TabIndex = 1;
+            this.btn_startCom.Text = "开始通信";
+            this.btn_startCom.UseVisualStyleBackColor = true;
+            this.btn_startCom.Click += new System.EventHandler(this.btn_startCom_Click);
+            // 
             // statusStrip
             // 
             this.statusStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -808,6 +810,18 @@
             // 
             this.openFileDialog.FileName = "*.log";
             this.openFileDialog.Filter = "log files|*.log|All files|*.*";
+            // 
+            // checkBoxTimeStamp
+            // 
+            this.checkBoxTimeStamp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxTimeStamp.AutoSize = true;
+            this.checkBoxTimeStamp.Location = new System.Drawing.Point(234, 256);
+            this.checkBoxTimeStamp.Name = "checkBoxTimeStamp";
+            this.checkBoxTimeStamp.Size = new System.Drawing.Size(60, 16);
+            this.checkBoxTimeStamp.TabIndex = 31;
+            this.checkBoxTimeStamp.Text = "时间戳";
+            this.checkBoxTimeStamp.UseVisualStyleBackColor = true;
+            this.checkBoxTimeStamp.CheckedChanged += new System.EventHandler(this.checkBox_CheckedChanged);
             // 
             // MainForm
             // 
@@ -916,6 +930,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
         private System.Windows.Forms.TextBox tbxData;
+        private System.Windows.Forms.CheckBox checkBoxTimeStamp;
     }
 }
 

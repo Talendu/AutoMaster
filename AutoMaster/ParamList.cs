@@ -254,10 +254,10 @@ namespace AutoMaster
             }
             return -1;
         }
-        public static List<ParamItem> ParamList_Update(List<ParamItem> list, ArrayList rxBuffer)
+        public static int ParamList_Update(List<ParamItem> list, ArrayList rxBuffer)
         {
             FRAME frame = new FRAME();
-            List<ParamItem> outList = new List<ParamItem>();
+            int count = 0;
             byte[] stream;
             int payloadSize = 0;
             int headSize = 4; //起始符(1) + ID(2) + type(1) = 4
@@ -289,7 +289,7 @@ namespace AutoMaster
                     }
                     frame.head = stream[index];
                     rxBuffer.RemoveRange(0, end + 1);
-                    if (calculate_crc(stream.Skip(1).Take(5).ToArray(), 5) != frame.crc)
+                    if (calculate_crc(stream.Skip(1).Take(headSize + payloadSize - 1).ToArray(), headSize + payloadSize - 1) != frame.crc)
                     {
                         break;
                     }
@@ -351,7 +351,7 @@ namespace AutoMaster
                             continue;
                         }
                     }
-                    outList.Add(list[listIndex]);
+                    count++;
                 }
                 catch (Exception)
                 {
@@ -359,7 +359,7 @@ namespace AutoMaster
                 }
             }
 
-            return outList;
+            return count;
         }
     }
 }

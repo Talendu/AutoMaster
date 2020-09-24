@@ -41,6 +41,7 @@ namespace AutoMaster
             configInNvm.showSend = bool.Parse(ConfigurationManager.AppSettings["showSend"]);
             configInNvm.sendInHex = bool.Parse(ConfigurationManager.AppSettings["sendInHex"]);
             configInNvm.sendNewLine = bool.Parse(ConfigurationManager.AppSettings["sendNewLine"]);
+            configInNvm.sendNewLine = bool.Parse(ConfigurationManager.AppSettings["timeStamp"]);
             configInNvm.period = int.Parse(ConfigurationManager.AppSettings["period"]);
             configInNvm.baud = int.Parse(ConfigurationManager.AppSettings["baud"]);
             configInNvm.dataBits = int.Parse(ConfigurationManager.AppSettings["dataBits"]);
@@ -75,6 +76,7 @@ namespace AutoMaster
             cfa.AppSettings.Settings["showSend"].Value = config.showSend.ToString();
             cfa.AppSettings.Settings["sendInHex"].Value = config.showInHex.ToString();
             cfa.AppSettings.Settings["sendNewLine"].Value = config.sendNewLine.ToString();
+            cfa.AppSettings.Settings["timeStamp"].Value = config.timeStamp.ToString();
             cfa.AppSettings.Settings["period"].Value = config.period.ToString();
             cfa.AppSettings.Settings["baud"].Value = config.baud.ToString();
             cfa.AppSettings.Settings["dataBits"].Value = config.dataBits.ToString();
@@ -91,6 +93,7 @@ namespace AutoMaster
             public bool showSend;
             public bool sendInHex;
             public bool sendNewLine;
+            public bool timeStamp;
             public int period;
             public int baud;
             public int dataBits;
