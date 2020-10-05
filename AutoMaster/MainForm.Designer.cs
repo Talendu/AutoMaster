@@ -48,8 +48,8 @@
             this.checkBoxSendRegular = new System.Windows.Forms.CheckBox();
             this.LabelCycle = new System.Windows.Forms.Label();
             this.GBoxMessageView = new System.Windows.Forms.GroupBox();
-            this.tbxData = new System.Windows.Forms.TextBox();
             this.btnClearData = new System.Windows.Forms.Button();
+            this.checkBoxTimeStamp = new System.Windows.Forms.CheckBox();
             this.checkBoxShowSend = new System.Windows.Forms.CheckBox();
             this.checkBoxAutoNewLine = new System.Windows.Forms.CheckBox();
             this.checkBoxShowInHex = new System.Windows.Forms.CheckBox();
@@ -57,6 +57,7 @@
             this.LabelReceiveCount = new System.Windows.Forms.Label();
             this.tbxSendCount = new System.Windows.Forms.TextBox();
             this.LabelSendCount = new System.Windows.Forms.Label();
+            this.tbxData = new System.Windows.Forms.TextBox();
             this.tabPageParamShow = new System.Windows.Forms.TabPage();
             this.listView_State = new System.Windows.Forms.ListView();
             this.columnHeader1 = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -85,6 +86,15 @@
             this.dataGridViewTextBoxColumn8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn10 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.btnStopSendFile = new System.Windows.Forms.Button();
+            this.btnSendFile = new System.Windows.Forms.Button();
+            this.btnOpenFile = new System.Windows.Forms.Button();
+            this.LabelProgress = new System.Windows.Forms.Label();
+            this.LabelProtocol = new System.Windows.Forms.Label();
+            this.cbxProtocol = new System.Windows.Forms.ComboBox();
+            this.pgrsBarSendPgrs = new System.Windows.Forms.ProgressBar();
+            this.textBoxFileName = new System.Windows.Forms.TextBox();
             this.btn_startCom = new System.Windows.Forms.Button();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip_Com = new System.Windows.Forms.ToolStripDropDownButton();
@@ -98,7 +108,7 @@
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.fontDialog = new System.Windows.Forms.FontDialog();
-            this.checkBoxTimeStamp = new System.Windows.Forms.CheckBox();
+            this.btnSendCmd = new System.Windows.Forms.Button();
             this.menuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageCom.SuspendLayout();
@@ -111,6 +121,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_di)).BeginInit();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_do)).BeginInit();
+            this.tabPage4.SuspendLayout();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -175,11 +186,13 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Location = new System.Drawing.Point(12, 62);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(760, 451);
+            this.tabControl1.Size = new System.Drawing.Size(760, 473);
             this.tabControl1.TabIndex = 1;
+            this.tabControl1.SelectedIndexChanged += new System.EventHandler(this.tabControl1_SelectedIndexChanged);
             // 
             // tabPageCom
             // 
@@ -188,7 +201,7 @@
             this.tabPageCom.Location = new System.Drawing.Point(4, 22);
             this.tabPageCom.Name = "tabPageCom";
             this.tabPageCom.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageCom.Size = new System.Drawing.Size(752, 425);
+            this.tabPageCom.Size = new System.Drawing.Size(752, 447);
             this.tabPageCom.TabIndex = 0;
             this.tabPageCom.Text = "通讯";
             this.tabPageCom.UseVisualStyleBackColor = true;
@@ -205,7 +218,7 @@
             this.GBoxSendData.Controls.Add(this.checkBoxSendHex);
             this.GBoxSendData.Controls.Add(this.checkBoxSendRegular);
             this.GBoxSendData.Controls.Add(this.LabelCycle);
-            this.GBoxSendData.Location = new System.Drawing.Point(4, 295);
+            this.GBoxSendData.Location = new System.Drawing.Point(4, 317);
             this.GBoxSendData.Name = "GBoxSendData";
             this.GBoxSendData.Size = new System.Drawing.Size(742, 124);
             this.GBoxSendData.TabIndex = 2;
@@ -312,7 +325,6 @@
             this.GBoxMessageView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.GBoxMessageView.Controls.Add(this.tbxData);
             this.GBoxMessageView.Controls.Add(this.btnClearData);
             this.GBoxMessageView.Controls.Add(this.checkBoxTimeStamp);
             this.GBoxMessageView.Controls.Add(this.checkBoxShowSend);
@@ -322,30 +334,18 @@
             this.GBoxMessageView.Controls.Add(this.LabelReceiveCount);
             this.GBoxMessageView.Controls.Add(this.tbxSendCount);
             this.GBoxMessageView.Controls.Add(this.LabelSendCount);
+            this.GBoxMessageView.Controls.Add(this.tbxData);
             this.GBoxMessageView.Location = new System.Drawing.Point(6, 6);
             this.GBoxMessageView.Name = "GBoxMessageView";
-            this.GBoxMessageView.Size = new System.Drawing.Size(740, 283);
+            this.GBoxMessageView.Size = new System.Drawing.Size(740, 305);
             this.GBoxMessageView.TabIndex = 1;
             this.GBoxMessageView.TabStop = false;
             this.GBoxMessageView.Text = "数据显示";
             // 
-            // tbxData
-            // 
-            this.tbxData.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tbxData.Location = new System.Drawing.Point(7, 21);
-            this.tbxData.Multiline = true;
-            this.tbxData.Name = "tbxData";
-            this.tbxData.ReadOnly = true;
-            this.tbxData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.tbxData.Size = new System.Drawing.Size(727, 221);
-            this.tbxData.TabIndex = 32;
-            // 
             // btnClearData
             // 
             this.btnClearData.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnClearData.Location = new System.Drawing.Point(659, 248);
+            this.btnClearData.Location = new System.Drawing.Point(659, 270);
             this.btnClearData.Name = "btnClearData";
             this.btnClearData.Size = new System.Drawing.Size(75, 28);
             this.btnClearData.TabIndex = 0;
@@ -353,13 +353,25 @@
             this.btnClearData.UseVisualStyleBackColor = true;
             this.btnClearData.Click += new System.EventHandler(this.btnClearData_Click);
             // 
+            // checkBoxTimeStamp
+            // 
+            this.checkBoxTimeStamp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.checkBoxTimeStamp.AutoSize = true;
+            this.checkBoxTimeStamp.Location = new System.Drawing.Point(234, 278);
+            this.checkBoxTimeStamp.Name = "checkBoxTimeStamp";
+            this.checkBoxTimeStamp.Size = new System.Drawing.Size(60, 16);
+            this.checkBoxTimeStamp.TabIndex = 31;
+            this.checkBoxTimeStamp.Text = "时间戳";
+            this.checkBoxTimeStamp.UseVisualStyleBackColor = true;
+            this.checkBoxTimeStamp.CheckedChanged += new System.EventHandler(this.checkBox_CheckedChanged);
+            // 
             // checkBoxShowSend
             // 
             this.checkBoxShowSend.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxShowSend.AutoSize = true;
             this.checkBoxShowSend.Checked = true;
             this.checkBoxShowSend.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBoxShowSend.Location = new System.Drawing.Point(156, 255);
+            this.checkBoxShowSend.Location = new System.Drawing.Point(156, 277);
             this.checkBoxShowSend.Name = "checkBoxShowSend";
             this.checkBoxShowSend.Size = new System.Drawing.Size(72, 16);
             this.checkBoxShowSend.TabIndex = 31;
@@ -371,7 +383,7 @@
             // 
             this.checkBoxAutoNewLine.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxAutoNewLine.AutoSize = true;
-            this.checkBoxAutoNewLine.Location = new System.Drawing.Point(78, 255);
+            this.checkBoxAutoNewLine.Location = new System.Drawing.Point(78, 277);
             this.checkBoxAutoNewLine.Name = "checkBoxAutoNewLine";
             this.checkBoxAutoNewLine.Size = new System.Drawing.Size(72, 16);
             this.checkBoxAutoNewLine.TabIndex = 30;
@@ -383,7 +395,7 @@
             // 
             this.checkBoxShowInHex.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.checkBoxShowInHex.AutoSize = true;
-            this.checkBoxShowInHex.Location = new System.Drawing.Point(6, 255);
+            this.checkBoxShowInHex.Location = new System.Drawing.Point(6, 277);
             this.checkBoxShowInHex.Name = "checkBoxShowInHex";
             this.checkBoxShowInHex.Size = new System.Drawing.Size(66, 16);
             this.checkBoxShowInHex.TabIndex = 28;
@@ -395,7 +407,7 @@
             // 
             this.tbxReceiveCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.tbxReceiveCount.CausesValidation = false;
-            this.tbxReceiveCount.Location = new System.Drawing.Point(469, 253);
+            this.tbxReceiveCount.Location = new System.Drawing.Point(469, 275);
             this.tbxReceiveCount.Name = "tbxReceiveCount";
             this.tbxReceiveCount.ReadOnly = true;
             this.tbxReceiveCount.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -407,7 +419,7 @@
             this.LabelReceiveCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.LabelReceiveCount.AutoSize = true;
             this.LabelReceiveCount.ForeColor = System.Drawing.Color.Blue;
-            this.LabelReceiveCount.Location = new System.Drawing.Point(434, 256);
+            this.LabelReceiveCount.Location = new System.Drawing.Point(434, 278);
             this.LabelReceiveCount.Name = "LabelReceiveCount";
             this.LabelReceiveCount.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.LabelReceiveCount.Size = new System.Drawing.Size(29, 12);
@@ -418,7 +430,7 @@
             // 
             this.tbxSendCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.tbxSendCount.CausesValidation = false;
-            this.tbxSendCount.Location = new System.Drawing.Point(380, 253);
+            this.tbxSendCount.Location = new System.Drawing.Point(380, 275);
             this.tbxSendCount.Name = "tbxSendCount";
             this.tbxSendCount.ReadOnly = true;
             this.tbxSendCount.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
@@ -430,12 +442,25 @@
             this.LabelSendCount.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.LabelSendCount.AutoSize = true;
             this.LabelSendCount.ForeColor = System.Drawing.Color.OrangeRed;
-            this.LabelSendCount.Location = new System.Drawing.Point(345, 256);
+            this.LabelSendCount.Location = new System.Drawing.Point(345, 278);
             this.LabelSendCount.Name = "LabelSendCount";
             this.LabelSendCount.RightToLeft = System.Windows.Forms.RightToLeft.No;
             this.LabelSendCount.Size = new System.Drawing.Size(29, 12);
             this.LabelSendCount.TabIndex = 24;
             this.LabelSendCount.Text = "发送";
+            // 
+            // tbxData
+            // 
+            this.tbxData.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tbxData.Location = new System.Drawing.Point(7, 21);
+            this.tbxData.Multiline = true;
+            this.tbxData.Name = "tbxData";
+            this.tbxData.ReadOnly = true;
+            this.tbxData.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.tbxData.Size = new System.Drawing.Size(727, 243);
+            this.tbxData.TabIndex = 32;
             // 
             // tabPageParamShow
             // 
@@ -443,7 +468,7 @@
             this.tabPageParamShow.Location = new System.Drawing.Point(4, 22);
             this.tabPageParamShow.Name = "tabPageParamShow";
             this.tabPageParamShow.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPageParamShow.Size = new System.Drawing.Size(752, 425);
+            this.tabPageParamShow.Size = new System.Drawing.Size(752, 447);
             this.tabPageParamShow.TabIndex = 1;
             this.tabPageParamShow.Text = "参数显示";
             this.tabPageParamShow.UseVisualStyleBackColor = true;
@@ -498,7 +523,7 @@
             this.tabPage1.Controls.Add(this.dataGridView_param);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Size = new System.Drawing.Size(752, 425);
+            this.tabPage1.Size = new System.Drawing.Size(752, 447);
             this.tabPage1.TabIndex = 2;
             this.tabPage1.Text = "参数显示";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -569,7 +594,7 @@
             this.tabPage2.Controls.Add(this.dataGridView_di);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Size = new System.Drawing.Size(752, 425);
+            this.tabPage2.Size = new System.Drawing.Size(752, 447);
             this.tabPage2.TabIndex = 3;
             this.tabPage2.Text = "di";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -638,7 +663,7 @@
             this.tabPage3.Controls.Add(this.dataGridView_do);
             this.tabPage3.Location = new System.Drawing.Point(4, 22);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Size = new System.Drawing.Size(752, 425);
+            this.tabPage3.Size = new System.Drawing.Size(752, 447);
             this.tabPage3.TabIndex = 4;
             this.tabPage3.Text = "do";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -702,6 +727,115 @@
             this.dataGridViewTextBoxColumn10.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
             this.dataGridViewTextBoxColumn10.Width = 35;
             // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.btnStopSendFile);
+            this.tabPage4.Controls.Add(this.btnSendFile);
+            this.tabPage4.Controls.Add(this.btnSendCmd);
+            this.tabPage4.Controls.Add(this.btnOpenFile);
+            this.tabPage4.Controls.Add(this.LabelProgress);
+            this.tabPage4.Controls.Add(this.LabelProtocol);
+            this.tabPage4.Controls.Add(this.cbxProtocol);
+            this.tabPage4.Controls.Add(this.pgrsBarSendPgrs);
+            this.tabPage4.Controls.Add(this.textBoxFileName);
+            this.tabPage4.Location = new System.Drawing.Point(4, 22);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Size = new System.Drawing.Size(752, 447);
+            this.tabPage4.TabIndex = 5;
+            this.tabPage4.Text = "固件升级";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // btnStopSendFile
+            // 
+            this.btnStopSendFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnStopSendFile.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btnStopSendFile.Location = new System.Drawing.Point(674, 390);
+            this.btnStopSendFile.Name = "btnStopSendFile";
+            this.btnStopSendFile.Size = new System.Drawing.Size(75, 28);
+            this.btnStopSendFile.TabIndex = 27;
+            this.btnStopSendFile.Text = "停止发送";
+            this.btnStopSendFile.UseVisualStyleBackColor = true;
+            this.btnStopSendFile.Click += new System.EventHandler(this.btnStopSendFile_Click);
+            // 
+            // btnSendFile
+            // 
+            this.btnSendFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSendFile.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btnSendFile.Location = new System.Drawing.Point(593, 390);
+            this.btnSendFile.Name = "btnSendFile";
+            this.btnSendFile.Size = new System.Drawing.Size(75, 28);
+            this.btnSendFile.TabIndex = 26;
+            this.btnSendFile.Text = "发送文件";
+            this.btnSendFile.UseVisualStyleBackColor = true;
+            this.btnSendFile.Click += new System.EventHandler(this.btnSendFile_Click);
+            // 
+            // btnOpenFile
+            // 
+            this.btnOpenFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnOpenFile.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btnOpenFile.Location = new System.Drawing.Point(429, 390);
+            this.btnOpenFile.Name = "btnOpenFile";
+            this.btnOpenFile.Size = new System.Drawing.Size(75, 28);
+            this.btnOpenFile.TabIndex = 25;
+            this.btnOpenFile.Text = "打开文件";
+            this.btnOpenFile.UseVisualStyleBackColor = true;
+            this.btnOpenFile.Click += new System.EventHandler(this.btnOpenFile_Click);
+            // 
+            // LabelProgress
+            // 
+            this.LabelProgress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.LabelProgress.AutoSize = true;
+            this.LabelProgress.Location = new System.Drawing.Point(510, 427);
+            this.LabelProgress.Name = "LabelProgress";
+            this.LabelProgress.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.LabelProgress.Size = new System.Drawing.Size(17, 12);
+            this.LabelProgress.TabIndex = 29;
+            this.LabelProgress.Text = "0%";
+            // 
+            // LabelProtocol
+            // 
+            this.LabelProtocol.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.LabelProtocol.AutoSize = true;
+            this.LabelProtocol.Location = new System.Drawing.Point(535, 427);
+            this.LabelProtocol.Name = "LabelProtocol";
+            this.LabelProtocol.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.LabelProtocol.Size = new System.Drawing.Size(41, 12);
+            this.LabelProtocol.TabIndex = 30;
+            this.LabelProtocol.Text = "协议：";
+            // 
+            // cbxProtocol
+            // 
+            this.cbxProtocol.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cbxProtocol.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cbxProtocol.FormattingEnabled = true;
+            this.cbxProtocol.Location = new System.Drawing.Point(582, 423);
+            this.cbxProtocol.Name = "cbxProtocol";
+            this.cbxProtocol.Size = new System.Drawing.Size(167, 20);
+            this.cbxProtocol.TabIndex = 24;
+            this.cbxProtocol.SelectedIndexChanged += new System.EventHandler(this.cbxProtocol_SelectedIndexChanged);
+            // 
+            // pgrsBarSendPgrs
+            // 
+            this.pgrsBarSendPgrs.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pgrsBarSendPgrs.Location = new System.Drawing.Point(3, 423);
+            this.pgrsBarSendPgrs.Name = "pgrsBarSendPgrs";
+            this.pgrsBarSendPgrs.Size = new System.Drawing.Size(501, 21);
+            this.pgrsBarSendPgrs.Step = 1;
+            this.pgrsBarSendPgrs.TabIndex = 28;
+            // 
+            // textBoxFileName
+            // 
+            this.textBoxFileName.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.textBoxFileName.Location = new System.Drawing.Point(3, 394);
+            this.textBoxFileName.Name = "textBoxFileName";
+            this.textBoxFileName.ReadOnly = true;
+            this.textBoxFileName.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.textBoxFileName.Size = new System.Drawing.Size(420, 21);
+            this.textBoxFileName.TabIndex = 18;
+            this.textBoxFileName.Text = "请打开文件";
+            // 
             // btn_startCom
             // 
             this.btn_startCom.Location = new System.Drawing.Point(12, 28);
@@ -722,7 +856,7 @@
             this.statusStrip_StopBit,
             this.statusStrip_Parity,
             this.statusStrip_Enable});
-            this.statusStrip.Location = new System.Drawing.Point(0, 516);
+            this.statusStrip.Location = new System.Drawing.Point(0, 538);
             this.statusStrip.Name = "statusStrip";
             this.statusStrip.Size = new System.Drawing.Size(784, 23);
             this.statusStrip.TabIndex = 2;
@@ -811,29 +945,30 @@
             this.openFileDialog.FileName = "*.log";
             this.openFileDialog.Filter = "log files|*.log|All files|*.*";
             // 
-            // checkBoxTimeStamp
+            // btnSendCmd
             // 
-            this.checkBoxTimeStamp.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.checkBoxTimeStamp.AutoSize = true;
-            this.checkBoxTimeStamp.Location = new System.Drawing.Point(234, 256);
-            this.checkBoxTimeStamp.Name = "checkBoxTimeStamp";
-            this.checkBoxTimeStamp.Size = new System.Drawing.Size(60, 16);
-            this.checkBoxTimeStamp.TabIndex = 31;
-            this.checkBoxTimeStamp.Text = "时间戳";
-            this.checkBoxTimeStamp.UseVisualStyleBackColor = true;
-            this.checkBoxTimeStamp.CheckedChanged += new System.EventHandler(this.checkBox_CheckedChanged);
+            this.btnSendCmd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSendCmd.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btnSendCmd.Location = new System.Drawing.Point(512, 390);
+            this.btnSendCmd.Name = "btnSendCmd";
+            this.btnSendCmd.Size = new System.Drawing.Size(75, 28);
+            this.btnSendCmd.TabIndex = 25;
+            this.btnSendCmd.Text = "发送指令";
+            this.btnSendCmd.UseVisualStyleBackColor = true;
+            this.btnSendCmd.Click += new System.EventHandler(this.btnSendCmd_Click);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(784, 539);
+            this.ClientSize = new System.Drawing.Size(784, 561);
             this.Controls.Add(this.btn_startCom);
             this.Controls.Add(this.statusStrip);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.menuStrip);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip;
+            this.MinimumSize = new System.Drawing.Size(800, 420);
             this.Name = "MainForm";
             this.Text = "AutoMaster";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.MainForm_FormClosing);
@@ -853,6 +988,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_di)).EndInit();
             this.tabPage3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_do)).EndInit();
+            this.tabPage4.ResumeLayout(false);
+            this.tabPage4.PerformLayout();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -931,6 +1068,16 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
         private System.Windows.Forms.TextBox tbxData;
         private System.Windows.Forms.CheckBox checkBoxTimeStamp;
+        private System.Windows.Forms.TabPage tabPage4;
+        private System.Windows.Forms.Button btnStopSendFile;
+        private System.Windows.Forms.Button btnSendFile;
+        private System.Windows.Forms.Button btnOpenFile;
+        private System.Windows.Forms.Label LabelProgress;
+        private System.Windows.Forms.Label LabelProtocol;
+        private System.Windows.Forms.ComboBox cbxProtocol;
+        private System.Windows.Forms.ProgressBar pgrsBarSendPgrs;
+        private System.Windows.Forms.TextBox textBoxFileName;
+        private System.Windows.Forms.Button btnSendCmd;
     }
 }
 

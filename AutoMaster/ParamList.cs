@@ -311,15 +311,15 @@ namespace AutoMaster
                     if (list[listIndex].formula != null &&
                         list[listIndex].formula.Length > 0)
                     {
-                        if (list[listIndex].formula.Substring(0, 1).Equals("/"))
+                        char[] formula = list[listIndex].formula.ToCharArray();
+                        if (formula[0] == '/')
                         {
                             double value = 0;
-                            string formula;
                             if ((frame.data_type & 0x30) == 0x00)
                             {
                                 for (int i = 0; i < payloadSize; i++)
                                 {
-                                    value = value * 256 + frame.data[i];
+                                    value = value + (Convert.ToUInt64(frame.data[i]) << 8 * i);
                                 }
                             }
                             else
@@ -327,9 +327,79 @@ namespace AutoMaster
                                 MessageBox.Show("暂不支持改格式数据!", "警告");
                                 continue;
                             }
-                            formula = list[listIndex].formula.Substring(1);
-                            value = value / Convert.ToDouble(formula);
+                            value = value / Convert.ToDouble(new string(formula,1,formula.Length - 1));
                             list[listIndex].value = value.ToString("f6");
+                        }
+                        else if (formula[0] == '{')
+                        {
+                            int start = 1, len1 = 1, len2 = 1;
+                            UInt64 value = 0;
+                            if ((frame.data_type & 0x30) == 0x00)
+                            {
+                                for (int i = 0; i < payloadSize; i++)
+                                {
+                                    value = value + (Convert.ToUInt64(frame.data[i]) << 8 * i);
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("暂不支持改格式数据!", "警告");
+                                continue;
+                            }
+                            for (;formula.Length > len1;)
+                            {
+                                if (formula[len1++] == '=')
+                                {
+                                    len2 = len1;
+                                    for (; formula.Length > len2; len2++)
+                                    {
+                                        if (formula[len2] == ',' || formula[len2] == '}')
+                                        {
+                                            break;
+                                        }
+
+                                    }
+                                }
+                                if (len2 > len1)
+                                {
+                                    if (value == Convert.ToUInt64(new string(formula, len1, len2 - len1)))
+                                    {
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        len2 += 1;
+                                        start = len2;
+                                        len1 = len2;
+                                    }
+                                }
+                            }
+                            if (start < len1 && len1 < len2)
+                            {
+                                list[listIndex].value = new string(formula, start, len1 - start - 1).ToString();
+                            }
+                            else
+                            {
+                                list[listIndex].value = value.ToString();
+                            }
+                        }
+                        else
+                        {
+                            UInt64 value = 0;
+                            if ((frame.data_type & 0x30) == 0x00)
+                            {
+                                for (int i = 0; i < payloadSize; i++)
+                                {
+                                    value = value + (Convert.ToUInt64(frame.data[i]) << 8 * i);
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("暂不支持改格式数据!", "警告");
+                                continue;
+                            }
+                            list[listIndex].value = value.ToString();
+
                         }
                     }
                     else

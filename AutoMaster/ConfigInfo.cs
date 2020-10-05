@@ -13,8 +13,13 @@ namespace AutoMaster
 		{
 			Disable = 0,
 			Enable = 1,
-		}
-        
+        }
+        public enum Protocols
+        {
+            Normal = 0,
+            Xmodem = 1,
+        }
+
         public static int[] DataBits = 
         {5, 6, 7, 8};
 
@@ -41,7 +46,7 @@ namespace AutoMaster
             configInNvm.showSend = bool.Parse(ConfigurationManager.AppSettings["showSend"]);
             configInNvm.sendInHex = bool.Parse(ConfigurationManager.AppSettings["sendInHex"]);
             configInNvm.sendNewLine = bool.Parse(ConfigurationManager.AppSettings["sendNewLine"]);
-            configInNvm.sendNewLine = bool.Parse(ConfigurationManager.AppSettings["timeStamp"]);
+            configInNvm.timeStamp = bool.Parse(ConfigurationManager.AppSettings["timeStamp"]);
             configInNvm.period = int.Parse(ConfigurationManager.AppSettings["period"]);
             configInNvm.baud = int.Parse(ConfigurationManager.AppSettings["baud"]);
             configInNvm.dataBits = int.Parse(ConfigurationManager.AppSettings["dataBits"]);
@@ -71,12 +76,12 @@ namespace AutoMaster
             //将用户的输入的配置更新保存到App.config
 
             Configuration cfa = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            cfa.AppSettings.Settings["showInHex"].Value = config.showInHex.ToString();
-            cfa.AppSettings.Settings["autoNewLine"].Value = config.autoNewLine.ToString();
-            cfa.AppSettings.Settings["showSend"].Value = config.showSend.ToString();
-            cfa.AppSettings.Settings["sendInHex"].Value = config.showInHex.ToString();
-            cfa.AppSettings.Settings["sendNewLine"].Value = config.sendNewLine.ToString();
-            cfa.AppSettings.Settings["timeStamp"].Value = config.timeStamp.ToString();
+            cfa.AppSettings.Settings["showInHex"].Value = config.showInHex.ToString().ToLower();
+            cfa.AppSettings.Settings["autoNewLine"].Value = config.autoNewLine.ToString().ToLower();
+            cfa.AppSettings.Settings["showSend"].Value = config.showSend.ToString().ToLower();
+            cfa.AppSettings.Settings["sendInHex"].Value = config.showInHex.ToString().ToLower();
+            cfa.AppSettings.Settings["sendNewLine"].Value = config.sendNewLine.ToString().ToLower();
+            cfa.AppSettings.Settings["timeStamp"].Value = config.timeStamp.ToString().ToLower();
             cfa.AppSettings.Settings["period"].Value = config.period.ToString();
             cfa.AppSettings.Settings["baud"].Value = config.baud.ToString();
             cfa.AppSettings.Settings["dataBits"].Value = config.dataBits.ToString();

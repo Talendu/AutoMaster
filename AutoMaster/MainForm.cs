@@ -14,6 +14,7 @@ using EnumsNET;
 using System.Threading;
 using System.Configuration;
 using System.Collections.Concurrent;
+using System.IO;
 
 namespace AutoMaster
 {
@@ -39,6 +40,16 @@ namespace AutoMaster
 
         StringBuilder displayBuffer = new StringBuilder();
 
+        //发送文件
+        string SendFileName;
+        bool isSendingFile = false;
+        int SendProgress = 0;
+        long SendFileStartTime;
+        ConfigInfo.Protocols protocol;
+        private List<SerialDataReceivedEventHandler> ReceivedHandlers;
+        Thread SendXmodemFileThread = null;
+        Thread SendNormalFileThread = null;
+
         public MainForm()
         {
             InitializeComponent();
@@ -46,14 +57,16 @@ namespace AutoMaster
 
         private void MainForm_Load(object sender, EventArgs e)
         {
+            ReceivedHandlers = new List<SerialDataReceivedEventHandler>();
             try
             {
                 configInNvm = ConfigInfo.GetNvmConfig();
                 checkBoxShowInHex.Checked = configInNvm.showInHex;
                 checkBoxAutoNewLine.Checked = configInNvm.autoNewLine;
-                checkBoxShowInHex.Checked = configInNvm.showSend;
-                checkBoxShowInHex.Checked = configInNvm.sendInHex;
-                checkBoxShowInHex.Checked = configInNvm.sendNewLine;
+                checkBoxShowSend.Checked = configInNvm.showSend;
+                checkBoxSendHex.Checked = configInNvm.sendInHex;
+                checkBoxSendNewLine.Checked = configInNvm.sendNewLine;
+                checkBoxTimeStamp.Checked = configInNvm.timeStamp;
                 serialPort.BaudRate = configInNvm.baud;
                 serialPort.DataBits = configInNvm.dataBits;
                 serialPort.StopBits = configInNvm.stopBits;
@@ -161,6 +174,7 @@ namespace AutoMaster
             listView_State.Columns[4].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
             //listView_State.Columns[4].TextAlign = HorizontalAlignment.Center;
             serialPort.DataReceived += new SerialDataReceivedEventHandler(serialDataReceive);
+            ReceivedHandlers.Add(serialDataReceive);
 
 
             dataGridView_di.AllowUserToAddRows = false;
@@ -175,9 +189,15 @@ namespace AutoMaster
             tabControl1.TabPages.RemoveAt(1);
             myReaderThread = new Thread(new ThreadStart(MyReadThreadProc));
             myResetEvent = new AutoResetEvent(false);
+
+            foreach (string protocol in Enum.GetNames(typeof(ConfigInfo.Protocols)))
+            {
+                cbxProtocol.Items.Add(protocol);
+            }
+            cbxProtocol.SelectedIndex = (int)ConfigInfo.Protocols.Xmodem;
             sem = new Semaphore(1, 1);
             sem_append = new Semaphore(1, 1);
-            myReaderThread.Start();
+            //myReaderThread.Start();
         }
 
         void updateUiMethod()
@@ -240,27 +260,32 @@ namespace AutoMaster
         private void MyReadThreadProc()
         {
             int i;
-            while (true)
+            //myResetEvent.WaitOne();
+            sem.WaitOne();
+            if (rxBuff != null && rxBuff.Length > 0)
             {
-                myResetEvent.WaitOne();
-                sem.WaitOne();
                 rxBuffer.AddRange(rxBuff);
                 ReceiveCount += rxBuff.Length;
-                sem.Release();
+                rxBuff = null;
+            }
+            sem.Release();
+            if (rxBuffer.Count > 0)
+            {
                 if (configInNvm.showInHex)
                 {
-                    ShowBytes(rxBuff, 2);
+                    ShowBytes((byte[])rxBuffer.ToArray(typeof(byte)), 2);
                 }
                 else
                 {
-                    ShowBytes(rxBuff, 1);
+                    ShowBytes((byte[])rxBuffer.ToArray(typeof(byte)), 1);
                 }
 
-                for (i = ParamList.ParamList_Update(paramList, rxBuffer); i > 0; i++)
+                for (i = ParamList.ParamList_Update(paramList, rxBuffer); i > 0; i--)
                 {
                     if (connecting)
                     {
                         serialHexTransmission("5a 00 00 80 00 0a");
+                        break;
                     }
                 }
             }
@@ -272,7 +297,8 @@ namespace AutoMaster
             serialPort.Read(rxBuff, 0, rxBuff.Length);
             
             sem.Release();
-            myResetEvent.Set();
+            MyReadThreadProc();
+            //myResetEvent.Set();
 
         }
         private void listView_State_Update(List<ParamList.ParamItem> list)
@@ -393,7 +419,7 @@ namespace AutoMaster
             buff = Encoding.Default.GetBytes(data);
             if (checkBoxShowSend.CheckState == CheckState.Checked)
             {
-                MyMessage msg = new MyMessage(1);
+                MyMessage msg = new MyMessage(MyMessage.MSG_TX);
                 msg.SetObj(Encoding.Default.GetString(buff));
                 ShowMessage(msg);
             }
@@ -417,7 +443,7 @@ namespace AutoMaster
             serialPort.Write(Buff, 0, Len);
             if (checkBoxShowSend.CheckState == CheckState.Checked)
             {
-                MyMessage msg = new MyMessage(1);
+                MyMessage msg = new MyMessage(MyMessage.MSG_TX);
                 msg.SetObj(data);
                 ShowMessage(msg);
             }
@@ -462,12 +488,13 @@ namespace AutoMaster
                 default:
                     return;
             }
-            MyMessage message = new MyMessage(2);
+            MyMessage message = new MyMessage(MyMessage.MSG_RX);
             message.SetObj(receive);
 
             ShowMessage(message);
         }
-        
+
+        int pre_what = 0;
         private void ShowMessage(object msg)
         {
             MyMessage message = (MyMessage)msg;
@@ -478,65 +505,76 @@ namespace AutoMaster
             sem_append.WaitOne();
             switch (message.GetWhat())
             {
-            case 1:
-                {
-                    if (checkBoxShowSend.CheckState == CheckState.Checked)
+                case MyMessage.MSG_TX:
+                    {
+                        if (checkBoxShowSend.CheckState == CheckState.Checked)
+                        {
+                            //tbxData.SelectionStart = tbxData.TextLength;
+                            //tbxData.SelectionColor = Color.OrangeRed;
+                            if (configInNvm.timeStamp)
+                            {
+                                displayBuffer.Append(DateTime.Now.ToString("hh:mm:ss.fff") + " ");
+                            }
+                            displayBuffer.Append("发: ");
+                            displayBuffer.Append((string)message.GetObj());
+                            if (checkBoxAutoNewLine.CheckState == CheckState.Checked)
+                            {
+                                displayBuffer.Append("\r\n");
+                            }
+                            //tbxData.ScrollToCaret();
+                        }
+                        pre_what = MyMessage.MSG_TX;
+                        break;
+                    }
+                case MyMessage.MSG_RX:
                     {
                         //tbxData.SelectionStart = tbxData.TextLength;
-                        //tbxData.SelectionColor = Color.OrangeRed;
+                        //tbxData.SelectionColor = Color.Blue;
                         if (configInNvm.timeStamp)
                         {
                             displayBuffer.Append(DateTime.Now.ToString("hh:mm:ss.fff") + " ");
                         }
-                        displayBuffer.Append("发: ");
+                        displayBuffer.Append("收: ");
                         displayBuffer.Append((string)message.GetObj());
                         if (checkBoxAutoNewLine.CheckState == CheckState.Checked)
                         {
                             displayBuffer.Append("\r\n");
                         }
                         //tbxData.ScrollToCaret();
+                        break;
                     }
-                    break;
-                }
-            case 2:
-                {
-                    //tbxData.SelectionStart = tbxData.TextLength;
-                    //tbxData.SelectionColor = Color.Blue;
-                    if (configInNvm.timeStamp)
+                case MyMessage.MSG_INFO:
                     {
-                        displayBuffer.Append(DateTime.Now.ToString("hh:mm:ss.fff") + " ");
-                    }
-                    displayBuffer.Append("收: ");
-                    displayBuffer.Append((string)message.GetObj());
-                    if (checkBoxAutoNewLine.CheckState == CheckState.Checked)
-                    {
+                        //tbxData.SelectionStart = tbxData.TextLength;
+                        //tbxData.SelectionColor = Color.Red;
+                        if (configInNvm.timeStamp)
+                            displayBuffer.Append(DateTime.Now.ToString("hh:mm:ss.fff") + " ");
+                        displayBuffer.Append("信息: ");
+                        displayBuffer.Append((string)message.GetObj());
                         displayBuffer.Append("\r\n");
+                        //tbxData.ScrollToCaret();
+                        break;
                     }
-                    //tbxData.ScrollToCaret();
-                    break;
-                }
-            case 3:
-                {
-                    //tbxData.SelectionStart = tbxData.TextLength;
-                    //tbxData.SelectionColor = Color.Red;
-                    if (configInNvm.timeStamp)
-                        displayBuffer.Append(DateTime.Now.TimeOfDay.ToString("hh:mm:ss.fff") + " ");
-                    displayBuffer.Append("错误: ");
-                    displayBuffer.Append((string)message.GetObj());
-                    displayBuffer.Append("\r\n");
-                    //tbxData.ScrollToCaret();
-                    break;
-                }
-            case 4:
-                {
-                    //tbxData.SelectionStart = tbxData.TextLength;
-                    //tbxData.SelectionColor = Color.Black;
-                    if (configInNvm.timeStamp)
-                        displayBuffer.Append(DateTime.Now.TimeOfDay.ToString("hh:mm:ss.fff") + " ");
-                    displayBuffer.Append("警告: ");
-                    displayBuffer.Append((string)message.GetObj());
-                    break;
-                }
+                case MyMessage.MSG_WARNING:
+                    {
+                        //tbxData.SelectionStart = tbxData.TextLength;
+                        //tbxData.SelectionColor = Color.Black;
+                        if (configInNvm.timeStamp)
+                            displayBuffer.Append(DateTime.Now.ToString("hh:mm:ss.fff") + " ");
+                        displayBuffer.Append("警告: ");
+                        displayBuffer.Append((string)message.GetObj());
+                        break;
+                    }
+                case MyMessage.MSG_ERROR:
+                    {
+                        //tbxData.SelectionStart = tbxData.TextLength;
+                        //tbxData.SelectionColor = Color.Black;
+                        if (configInNvm.timeStamp)
+                            displayBuffer.Append(DateTime.Now.ToString("hh:mm:ss.fff") + " ");
+                        displayBuffer.Append("错误: ");
+                        displayBuffer.Append((string)message.GetObj());
+                        break;
+                    }
             }
             sem_append.Release();
         }
@@ -568,7 +606,10 @@ namespace AutoMaster
                     }
                     catch (Exception)
                     {
-                        MessageBox.Show("\r\n错误:改变端口失败!\r\n");
+                        MyMessage msg = new MyMessage(MyMessage.MSG_ERROR);
+                        msg.SetObj("改变端口失败!\r\n");
+                        ShowMessage(msg);
+                        //MessageBox.Show("\r\n错误:改变端口失败!\r\n");
                         return;
                     }
                 }
@@ -596,7 +637,10 @@ namespace AutoMaster
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("\r\n错误:非法波特率!\r\n");
+                    MyMessage msg = new MyMessage(MyMessage.MSG_ERROR);
+                    msg.SetObj("非法波特率!\r\n");
+                    ShowMessage(msg);
+                    //MessageBox.Show("\r\n错误:非法波特率!\r\n");
                 }
             }
             else if(button.Equals(statusStrip_DataBits))
@@ -609,7 +653,10 @@ namespace AutoMaster
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("\r\n错误:非法数据位!\r\n");
+                    MyMessage msg = new MyMessage(MyMessage.MSG_ERROR);
+                    msg.SetObj("非法数据位!\r\n");
+                    ShowMessage(msg);
+                    //MessageBox.Show("\r\n错误:非法数据位!\r\n");
                 }
             }
             else if (button.Equals(statusStrip_StopBit))
@@ -628,7 +675,10 @@ namespace AutoMaster
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("\r\n错误:非法停止位!\r\n");
+                    MyMessage msg = new MyMessage(MyMessage.MSG_ERROR);
+                    msg.SetObj("非法停止位!\r\n");
+                    ShowMessage(msg);
+                    //MessageBox.Show("\r\n错误:非法停止位!\r\n");
                 }
             }
             else if (button.Equals(statusStrip_Parity))
@@ -647,7 +697,10 @@ namespace AutoMaster
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("\r\n错误:非法校验位!\r\n");
+                    MyMessage msg = new MyMessage(MyMessage.MSG_ERROR);
+                    msg.SetObj("非法校验位!\r\n");
+                    ShowMessage(msg);
+                    //MessageBox.Show("\r\n错误:非法校验位!\r\n");
                 }
             }
         }
@@ -852,12 +905,18 @@ namespace AutoMaster
 
         private void checkBox_CheckedChanged(object sender, EventArgs e)
         {
+            if (sender == checkBoxShowInHex)
             configInNvm.showInHex = checkBoxShowInHex.Checked;
-            configInNvm.autoNewLine = checkBoxAutoNewLine.Checked;
-            configInNvm.showSend = checkBoxShowSend.Checked;
-            configInNvm.sendInHex = checkBoxSendHex.Checked;
-            configInNvm.sendNewLine = checkBoxSendNewLine.Checked;
-            configInNvm.timeStamp = checkBoxTimeStamp.Checked;
+            if (sender == checkBoxAutoNewLine)
+                configInNvm.autoNewLine = checkBoxAutoNewLine.Checked;
+            if (sender == checkBoxShowSend)
+                configInNvm.showSend = checkBoxShowSend.Checked;
+            if (sender == checkBoxSendHex)
+                configInNvm.sendInHex = checkBoxSendHex.Checked;
+            if (sender == checkBoxSendNewLine)
+                configInNvm.sendNewLine = checkBoxSendNewLine.Checked;
+            if (sender == checkBoxTimeStamp)
+                configInNvm.timeStamp = checkBoxTimeStamp.Checked;
         }
 
         private void checkBoxSendRegular_CheckedChanged(object sender, EventArgs e)
@@ -930,7 +989,7 @@ namespace AutoMaster
 
                 string fileData = Encoding.Default.GetString(System.IO.File.ReadAllBytes(fileName));
                 //string fileData = System.IO.File.ReadAllText(fileName);
-                MyMessage msg = new MyMessage(4);
+                MyMessage msg = new MyMessage(MyMessage.MSG_ERROR);
                 btnClearData_Click(null, null);
                 msg.SetObj(fileData);
                 ShowMessage(msg);
@@ -966,7 +1025,10 @@ namespace AutoMaster
                 }
                 catch (Exception)
                 {
-                    MessageBox.Show("打开串口失败");
+                    MyMessage msg = new MyMessage(MyMessage.MSG_ERROR);
+                    msg.SetObj("打开串口失败!\r\n");
+                    ShowMessage(msg);
+                    //MessageBox.Show("打开串口失败");
                 }
             }
         }
@@ -1004,12 +1066,12 @@ namespace AutoMaster
                     RegularSendThread.Abort();
                 if (UpdateUiThread != null)
                     UpdateUiThread.Abort();
-                Thread.Sleep(100);
-                serialPort.Close();
-                Thread.Sleep(100);
-                serialPort.Dispose();
-                Thread.Sleep(100);
                 myReaderThread.Abort();
+                //Thread.Sleep(100);
+                serialPort.Close();
+                //Thread.Sleep(100);
+                serialPort.Dispose();
+                //Thread.Sleep(100);
             }
             catch (Exception)
             { }
@@ -1067,7 +1129,7 @@ namespace AutoMaster
                 {
                     btn.Text = "停止通信";
                     connecting = true;
-                    serialHexTransmission("5a 00 00 20 00 0a");
+                    serialHexTransmission("5a 00 00 20 04 00 0a");
                 }
             }
         }
@@ -1149,6 +1211,376 @@ namespace AutoMaster
                 catch (Exception) { }
             }
             //paramQuaua.Enqueue(paramList[listIndex]);
+        }
+
+        private void btnOpenFile_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.InitialDirectory = "F:\\ZLG\\Workspace\\GraduationDesign\\CAN2UART\\Debug";//注意这里写路径时要用c:\\而不是c:\
+            if (cbxProtocol.SelectedIndex == 0)
+            {
+                openFileDialog.Filter = "文本文件|*.txt*|所有文件|*.*";
+            }
+            else if (cbxProtocol.SelectedIndex == 1)
+            {
+                openFileDialog.Filter = "bin文件|*.bin*|文本文件|*.txt*|所有文件|*.*";
+            }
+            openFileDialog.RestoreDirectory = true;
+            openFileDialog.FilterIndex = 1;
+            if (openFileDialog.ShowDialog() == DialogResult.OK)
+            {
+                SendFileName = openFileDialog.FileName;
+                textBoxFileName.Text = SendFileName;
+
+                FileInfo fileInfo = new FileInfo(SendFileName);
+                MyMessage msg = new MyMessage(MyMessage.MSG_INFO);
+                msg.SetObj("文件大小:" + fileInfo.Length.ToString() + "字节\r\n");
+                ShowMessage(msg);
+                //byte[] filebuff = File.ReadAllBytes(SendFileName);
+                //ShowBytes(filebuff, 2);
+            }
+        }
+
+        private void SendFileNormalMethod(object obj)
+        {
+            byte[] sendbuff = (byte[])obj;
+            int packages = (sendbuff.Length + 127) / 128;
+            int index = 0;
+            for (int i = 1; i <= packages; i++)
+            {
+                int packetLen = sendbuff.Length - index;
+                if (packetLen > 128)
+                {
+                    packetLen = 128;
+                }
+                serialPort.Write(sendbuff, index, packetLen);
+                index += packetLen;
+                if (isSendingFile == false)
+                {
+                    break;
+                }
+                SendProgress = i * 100 / packages;
+                this.Invoke((EventHandler)(delegate
+                {
+                    LabelProgress.Text = SendProgress.ToString() + "%";
+                    pgrsBarSendPgrs.Value = SendProgress;
+                }));
+            }
+            this.Invoke((EventHandler)(delegate
+            {
+                long useTime = DateTime.Now.Ticks - SendFileStartTime;
+                MyMessage msg = new MyMessage(MyMessage.MSG_INFO);
+                msg.SetObj("\r\n文件发送完成!\r\n文件大小:"
+                    + new FileInfo(SendFileName).Length.ToString()
+                    + "字节\r\n"
+                    + "用时:"
+                    + ((useTime) / 10000000).ToString()
+                    + "."
+                    + ((useTime) % 10000000).ToString()
+                    + "s\r\n"
+                    );
+                ShowMessage(msg);
+                btnStopSendFile_Click(null, null);
+            }));
+        }
+
+        private void SendFileXmodemMethod(object obj)
+        {
+            byte[] sendbuff = (byte[])obj;
+            int packages = (sendbuff.Length + 127) / 128;
+            int sentpackageNum = 0;
+            int index = 0;
+            int buffLen = sendbuff.Length;
+
+            while (isSendingFile && buffLen > index)
+            {
+                index = sentpackageNum << 7;
+                sentpackageNum++;
+                int packageLen = buffLen - index;
+
+                byte[] head = { (byte)Xmodem.CtrlChar.SOH,
+                    (byte)(sentpackageNum & 0xFF), (byte)((~sentpackageNum) & 0xFF) };
+                serialPort.Write(head, 0, 3);
+                if (packageLen >= 128)
+                {
+                    packageLen = 128;
+                    serialPort.Write(sendbuff, index, packageLen);
+                    int crcret = Xmodem.calcrc(sendbuff, index, packageLen);
+                    byte[] crc = new byte[2];
+                    crc[1] = (byte)(crcret & 0xFF);
+                    crc[0] = (byte)((crcret & 0xFFFF) >> 8);
+                    serialPort.Write(crc, 0, 2);
+                }
+                else if (packageLen < 128)
+                {
+                    byte[] pack = new byte[128];
+                    byte fell = (byte)Xmodem.CtrlChar.CTRLZ;
+
+                    Array.Copy(sendbuff, index, pack, 0, packageLen);
+                    for (int i = packageLen; i < 128; i++)
+                    {
+                        pack[i] = fell;
+                    }
+                    serialPort.Write(pack, 0, 128);
+
+                    int crcret = Xmodem.calcrc(pack, 0, 128);
+                    byte[] crc = new byte[2];
+                    crc[1] = (byte)(crcret & 0xFF);
+                    crc[0] = (byte)((crcret & 0xFFFF) >> 8);
+                    serialPort.Write(crc, 0, 2);
+                }
+                while (isSendingFile)
+                {
+                    if (serialPort.BytesToRead > 0)
+                    {
+                        byte ack = (byte)serialPort.ReadByte();
+                        if (ack == (byte)Xmodem.CtrlChar.ACK)
+                        {
+                            SendProgress = sentpackageNum * 100 / packages;
+                            this.Invoke((EventHandler)(delegate
+                            {
+                                LabelProgress.Text = SendProgress.ToString() + "%";
+                                pgrsBarSendPgrs.Value = SendProgress;
+                            }));
+                            break;
+                        }
+                        else if (ack == (byte)Xmodem.CtrlChar.CAN)
+                        {
+                            byte[] can = { (byte)Xmodem.CtrlChar.CAN };
+                            serialPort.Write(can, 0, 1);
+                            return;
+                        }
+                        else if (ack == (byte)Xmodem.CtrlChar.NAK)
+                        {
+                            sentpackageNum--;
+                            break;
+                        }
+                    }
+                }
+
+                if (packages == sentpackageNum)
+                {
+                    byte[] eot = { (byte)Xmodem.CtrlChar.EOT };
+                    serialPort.Write(eot, 0, 1);
+                    while (isSendingFile)
+                    {
+                        if (serialPort.BytesToRead > 0)
+                        {
+                            this.Invoke((EventHandler)(delegate
+                            {
+                                if (serialPort.ReadByte() == (byte)Xmodem.CtrlChar.ACK)
+                                {
+                                    MyMessage msg = new MyMessage(MyMessage.MSG_INFO);
+                                    msg.SetObj("\r\n发送完成!\r\n");
+                                    ShowMessage(msg);
+                                }
+                                else
+                                {
+                                    MyMessage msg = new MyMessage(MyMessage.MSG_ERROR);
+                                    msg.SetObj("\r\n错误:发送失败!\r\n");
+                                    ShowMessage(msg);
+                                }
+                                btnStopSendFile_Click(null, null);
+                            }));
+                        }
+                    }
+                }
+
+            }
+
+        }
+
+        private void SendFile(string path)
+        {
+            Byte[] buff = null;
+            if (path == null || File.Exists(path) == false)
+            {
+                MyMessage msg = new MyMessage(MyMessage.MSG_ERROR);
+                msg.SetObj("\r\n错误:文件不存在!\r\n");
+                ShowMessage(msg);
+                this.Invoke((EventHandler)(delegate
+                {
+                    btnStopSendFile_Click(null, null);
+                }));
+                return;
+            }
+            buff = File.ReadAllBytes(path);
+            if (buff.Length <= 0)
+            {
+                MyMessage msg = new MyMessage(MyMessage.MSG_WARNING);
+                msg.SetObj("\r\n错误:文件为空!\r\n");
+                ShowMessage(msg);
+                this.Invoke((EventHandler)(delegate
+                {
+                    btnStopSendFile_Click(null, null);
+                }));
+                return;
+            }
+            if (protocol == ConfigInfo.Protocols.Normal)
+            {
+                if (SendNormalFileThread == null)
+                {
+                    SendNormalFileThread = new Thread(
+                        new ParameterizedThreadStart(SendFileNormalMethod));
+                    SendNormalFileThread.Start(buff);
+                }
+            }
+            else if (protocol == ConfigInfo.Protocols.Xmodem)
+            {
+                if (SendXmodemFileThread == null)
+                {
+                    SendXmodemFileThread = new Thread(
+                        new ParameterizedThreadStart(SendFileXmodemMethod));
+                    SendXmodemFileThread.Start(buff);
+                }
+            }
+        }
+
+        private void FileSendXmodemHandle(object sender, SerialDataReceivedEventArgs e)
+        {
+            while (isSendingFile)
+            {
+                if (serialPort.BytesToRead <= 0)
+                {
+                    continue;
+                }
+                byte data = (byte)serialPort.ReadByte();
+                switch (data)
+                {
+                    case (byte)'C':
+                        SendFile(SendFileName);
+                        while (isSendingFile) ;
+                        break;
+                    case (byte)Xmodem.CtrlChar.CAN:
+                        break;
+                    default:
+                        this.Invoke((EventHandler)(delegate
+                        {
+                            ShowBytes(Encoding.Default.GetBytes(data.ToString()), 1);
+                        }));
+                        break;
+                }
+            }
+        }
+
+        private void btnSendCmd_Click(object sender, EventArgs e)
+        {
+            serialHexTransmission("5a 00 00 30 00 0a");
+        }
+
+        private void btnSendFile_Click(object sender, EventArgs e)
+        {
+            if (isSendingFile == false && isOpen)
+            {
+                cbxProtocol.Enabled = false;
+                btnSend.Enabled = false;
+                btnOpenFile.Enabled = false;
+                statusStrip_Enable.Enabled = false;
+                btnSendCmd.Enabled = false;
+                isSendingFile = true;
+
+                SendProgress = 0;
+                pgrsBarSendPgrs.Value = 0;
+                LabelProgress.Text = "0%";
+
+                SendFileStartTime = DateTime.Now.Ticks;
+                if (protocol == ConfigInfo.Protocols.Xmodem)
+                {
+                    if (ReceivedHandlers.Contains(serialDataReceive))
+                    {
+                        serialPort.DataReceived -= serialDataReceive;
+                        ReceivedHandlers.Remove(serialDataReceive);
+                    }
+                    if (!ReceivedHandlers.Contains(FileSendXmodemHandle))
+                    {
+                        serialPort.DataReceived += FileSendXmodemHandle;
+                        ReceivedHandlers.Add(FileSendXmodemHandle);
+                    }
+
+                }
+                if (protocol == ConfigInfo.Protocols.Normal)
+                {
+                    SendFile(SendFileName);
+                }
+            }
+        }
+
+        private void btnStopSendFile_Click(object sender, EventArgs e)
+        {
+            if (isSendingFile)
+            {
+                cbxProtocol.Enabled = true;
+                btnSend.Enabled = true;
+                btnOpenFile.Enabled = true;
+                statusStrip_Enable.Enabled = true;
+                btnSendCmd.Enabled = true;
+
+                isSendingFile = false;
+                if (protocol == ConfigInfo.Protocols.Xmodem)
+                {
+                    if (!ReceivedHandlers.Contains(serialDataReceive))
+                    {
+                        serialPort.DataReceived += serialDataReceive;
+                        ReceivedHandlers.Add(serialDataReceive);
+                    }
+                    if (ReceivedHandlers.Contains(FileSendXmodemHandle))
+                    {
+                        serialPort.DataReceived -= FileSendXmodemHandle;
+                        ReceivedHandlers.Remove(FileSendXmodemHandle);
+                    }
+                    if (SendXmodemFileThread != null)
+                    {
+                        try
+                        {
+                            SendXmodemFileThread.Abort();
+                            SendXmodemFileThread = null;
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                    }
+                }
+                else if (protocol == ConfigInfo.Protocols.Normal)
+                {
+                    if (SendNormalFileThread != null)
+                    {
+                        try
+                        {
+                            SendNormalFileThread.Abort();
+                            SendNormalFileThread = null;
+                        }
+                        catch (Exception)
+                        {
+
+                        }
+                    }
+                }
+            }
+        }
+
+        private void cbxProtocol_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (cbxProtocol.SelectedIndex == (int)ConfigInfo.Protocols.Normal)
+            {
+                protocol = ConfigInfo.Protocols.Normal;
+            }
+            else if (cbxProtocol.SelectedIndex == (int)ConfigInfo.Protocols.Xmodem)
+            {
+                protocol = ConfigInfo.Protocols.Xmodem;
+            }
+        }
+
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (tabControl1.SelectedIndex == 0)
+            {
+                this.GBoxMessageView.Controls.Add(this.tbxData);
+            }
+            else if (tabControl1.SelectedIndex == 4)
+            {
+                this.tabPage4.Controls.Add(this.tbxData);
+            }
         }
     }
 }
