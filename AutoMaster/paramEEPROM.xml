@@ -1,0 +1,176 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+
+<paramList>
+  <group name="VehiclePara_Obj">
+    <group name="SystemPara">
+      <param offset="0" name="TargetVersion" value=""/>
+      <param offset="1" name="SoftwareVersion" value=""/>
+      <param offset="2" name="SerialNumber" value=""/>
+    </group>
+    <param offset="3" name="VehicleWorkMode" value=""/>
+    <param offset="4" name="MotorWorkMode" value=""/>
+    <param offset="5" name="Typer_Max_Speed" value=""/>
+    <param offset="6" name="Torque_Base" value=""/>
+
+    <group name="SpeedModePara">
+      <param offset="7" name="Max_Speed" value=""/>
+      <param offset="8" name="Kaff" value=""/>
+      <param offset="9" name="Ka_b_BuiltRate" value=""/>
+      <param offset="10" name="Ka_b_ReleaseRate" value=""/>
+      <param offset="11" name="Full_Accel_Rate_HS" value=""/>
+      <param offset="12" name="Full_Accel_Rate_LS" value=""/>
+      <param offset="13" name="Low_Accel_Rate" value=""/>
+      <param offset="14" name="Neutral_Decel_Rate_HS" value=""/>
+      <param offset="15" name="Neutral_Decel_Rate_LS" value=""/>
+      <param offset="16" name="Full_Brake_Rate_HS" value=""/>
+      <param offset="17" name="Full_Brake_Rate_LS" value=""/>
+      <param offset="18" name="Low_Brake_Rate" value=""/>
+      <param offset="19" name="Partial_Decel_Rate" value=""/>
+      <param offset="20" name="High_Speed" value=""/>
+      <param offset="21" name="Low_Speed" value=""/>
+      <param offset="22" name="Reversal_Soften" value=""/>
+      <param offset="23" name="Max_Speed_Accel" value=""/>
+      <param offset="24" name="Max_Speed_Decel" value=""/>
+      <param offset="25" name="soft_stop_Speed" value=""/>
+    </group>
+
+    <group name="TorqueModePara">
+      <param offset="26" name="Max_Speed" value=""/>
+      <param offset="27" name="Accel_Rate" value=""/>
+      <param offset="28" name="Accel_Release_Rate" value=""/>
+      <param offset="29" name="Brake_Rate" value=""/>
+      <param offset="30" name="Brake_Release_Rate" value=""/>
+      <param offset="31" name="Neutral_Braking" value=""/>
+      <param offset="32" name="Neutral_Typer_Speed" value=""/>
+      <param offset="33" name="Creep_Torque" value=""/>
+      <param offset="34" name="Brake_Full_Creep_Cancel" value=""/>
+      <param offset="35" name="Creep_Build_Rate" value=""/>
+      <param offset="36" name="Creep_Release_Rate" value=""/>
+      <param offset="37" name="Gear_Soften" value=""/>
+      <param offset="38" name="Brake_Typer_Speed" value=""/>
+      <param offset="39" name="Reversal_Soften" value=""/>
+      <param offset="40" name="Max_Speed_Decel" value=""/>
+    </group>
+
+    <group name="TorqueLimit">
+      <param offset="41" name="Restraint_Forward" value=""/>
+      <param offset="42" name="Restraint_Back" value=""/>
+      <param offset="43" name="Drive_Current_Limit" value=""/>
+      <param offset="44" name="Regen_Current_Limit" value=""/>
+      <param offset="45" name="Brake_Current_Limit" value=""/>
+      <param offset="46" name="EMR_Current_Limit" value=""/>
+      <param offset="47" name="Interlock_Brake_Limit" value=""/>
+    </group>
+    <group name="DriveLimitMap">
+      <group name="PowerMode">
+        <param offset="48" name="Nominal" value=""/>
+        <param offset="49" name="Plus_Delta" value=""/>
+        <param offset="50" name="Plus_2xDelta" value=""/>
+        <param offset="51" name="Plus_4xDelta" value=""/>
+        <param offset="52" name="Plus_8xDelta" value=""/>
+      </group>
+      <group name="EconomyMode">
+        <param offset="53" name="Nominal" value=""/>
+        <param offset="54" name="Plus_Delta" value=""/>
+        <param offset="55" name="Plus_2xDelta" value=""/>
+        <param offset="56" name="Plus_4xDelta" value=""/>
+        <param offset="57" name="Plus_8xDelta" value=""/>
+      </group>
+    </group>
+    <group name="RegenLimitMap">
+      <param offset="58" name="Nominal" value=""/>
+      <param offset="59" name="Plus_Delta" value=""/>
+      <param offset="60" name="Plus_2xDelta" value=""/>
+      <param offset="61" name="Plus_4xDelta" value=""/>
+      <param offset="62" name="Plus_8xDelta" value=""/>
+    </group>
+    <group name="Throttle">
+      <param offset="63" name="Throttle_Type" value=""/>
+      <param offset="64" name="Throttle_Chk_Range" value=""/>
+      <param offset="65" name="Forward_Deadband" value=""/>
+      <param offset="66" name="Forward_Map" value=""/>
+      <param offset="67" name="Forward_Max" value=""/>
+      <param offset="68" name="Forward_Offset" value=""/>
+      <param offset="69" name="Reverse_Deadband" value=""/>
+      <param offset="70" name="Reverse_Map" value=""/>
+      <param offset="71" name="Reverse_Max" value=""/>
+      <param offset="72" name="Reverse_Offset" value=""/>
+      <param offset="73" name="Throttle_Ctr_En" value=""/>
+      <param offset="74" name="Throttle_Value" value=""/>
+    </group>
+    <group name="Brake">
+      <param offset="75" name="Brake_Pedal_Enable" value=""/>
+      <param offset="76" name="Brake_Type" value=""/>
+      <param offset="77" name="Brake_Deadband" value=""/>
+      <param offset="78" name="Brake_Map" value=""/>
+      <param offset="79" name="Brake_Max" value=""/>
+      <param offset="80" name="Brake_Offset" value=""/>
+      <param offset="81" name="Brake_Ctr_En" value=""/>
+      <param offset="82" name="Brake_Value" value=""/>
+    </group>
+
+    <param offset="83" name="LosCtr_En" value=""/>
+
+    <group name="TemperatureMap">
+      <param offset="84" name="Motor_Temp_En" value=""/>
+      <param offset="85" name="Motor_Temp_Hot" value=""/>
+      <param offset="86" name="Motor_Temp_Max" value=""/>
+      <param offset="87" name="MCU_Temp_En" value=""/>
+      <param offset="88" name="MCU_Temp_Hot" value=""/>
+      <param offset="89" name="MCU_Temp_Max" value=""/>
+      <param offset="90" name="MCU_LowTemp_En" value=""/>
+      <param offset="91" name="MCU_Temp_Cool" value=""/>
+      <param offset="92" name="MCU_Temp_min" value=""/>
+    </group>
+    <group name="VoltageMap">
+      <param offset="93" name="Nominal_Voltage" value=""/>
+      <param offset="94" name="UnderVol_Cutback_En" value=""/>
+      <param offset="95" name="UnderVol_Cutback_Range" value=""/>
+      <param offset="96" name="User_UnderVoltage" value=""/>
+      <param offset="97" name="OverVol_Cutback_En" value=""/>
+      <param offset="98" name="OverVol_Cutback_Range" value=""/>
+      <param offset="99" name="User_OverVoltage" value=""/>
+    </group>
+    <group name="Battery">
+      <param offset="100" name="Reset_Voltage_Level" value=""/>
+      <param offset="101" name="Full_Voltage_Level" value=""/>
+      <param offset="102" name="Empty_Voltage_Level" value=""/>
+      <param offset="103" name="Discharge_Time" value=""/>
+      <param offset="104" name="BDI_Reset_Percent" value=""/>
+    </group>
+  </group>
+  <group name="VehicleRecord_Obj">
+    <param offset="105" name="BDI_Percent" value=""/>
+    <group name="RL">
+      <param offset="106" name="Run[0]" value=""/>
+      <param offset="107" name="Run[1]" value=""/>
+    </group>
+    <group name="DM">
+      <param offset="108" name="Drive[0]" value=""/>
+      <param offset="109" name="Drive[1]" value=""/>
+    </group>
+    <param offset="110" name="Drive[0]" value=""/>
+    <param offset="111" name="Drive[1]" value=""/>
+    <param offset="112" name="Drive[2]" value=""/>
+    <param offset="113" name="Drive[3]" value=""/>
+    <param offset="114" name="Drive[4]" value=""/>
+    <param offset="115" name="Drive[5]" value=""/>
+    <param offset="116" name="Drive[6]" value=""/>
+    <param offset="117" name="Drive[7]" value=""/>
+    <param offset="118" name="Drive[8]" value=""/>
+    <param offset="119" name="Drive[9]" value=""/>
+    <param offset="120" name="Drive[10]" value=""/>
+    <param offset="121" name="Drive[11]" value=""/>
+  </group>
+  <group name="FaultSet">
+    <param offset="122" name="Low_12V" value=""/>
+    <param offset="123" name="High_12V" value=""/>
+    <param offset="124" name="BMS_Temp_Max" value=""/>
+    <param offset="125" name="BMS_Current_Max" value=""/>
+    <param offset="126" name="Charge_Current_Max" value=""/>
+    <param offset="127" name="Throttle_Min_Vol" value=""/>
+    <param offset="128" name="Throttle_Max_Vol" value=""/>
+    <param offset="129" name="Brake_Min_Vol" value=""/>
+    <param offset="130" name="Brake_Max_Vol" value=""/>
+  </group>
+</paramList>

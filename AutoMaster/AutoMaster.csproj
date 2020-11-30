@@ -60,6 +60,7 @@
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
     <Compile Include="MyMessage.cs" />
+    <Compile Include="ParamEEPROM.cs" />
     <Compile Include="ParamList.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -93,6 +94,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="paramEEPROM.xml">
+      <SubType>Designer</SubType>
+    </Content>
     <Content Include="paramList.xml">
       <SubType>Designer</SubType>
     </Content>

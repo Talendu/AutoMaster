@@ -130,13 +130,115 @@ namespace AutoMaster
                 bitMap = new List<BitMap>();
             }
         }
-        class FRAME
+        public class crc
         {
+            private static byte polynomial = 0x31;
+            private byte result;
+            private byte xor;
+            private bool refin;
+            private bool refout;
+            public crc(byte init, byte xor)
+            {
+                result = init;
+                this.xor = xor;
+                this.refin = false;
+                this.refout = false;
+            }
+            public crc(byte init, byte xor, bool refin, bool refout)
+            {
+                result = init;
+                this.xor = xor;
+                this.refin = refin;
+                this.refout = refout;
+            }
+            private static byte BitReverse(byte data)
+            {
+                int temp;
+                temp = (data & 0x01) << 7;
+                temp |= (data & 0x02) << 5;
+                temp |= (data & 0x04) << 3;
+                temp |= (data & 0x08) << 1;
+                temp |= (data & 0x10) >> 1;
+                temp |= (data & 0x20) >> 3;
+                temp |= (data & 0x40) >> 5;
+                temp |= (data & 0x80) >> 7;
+                return (byte)temp;
+            }
+            public void write(byte data)
+            {
+                if (refin)
+                {
+                    data = BitReverse(data);
+                }
+                result = (byte)(result ^ data);
+                for (int j = 0; j < 8; j++)
+                {
+                    result = (result & 0x80) != 0 ? (byte)((result << 1) ^ polynomial) : (byte)(result << 1);
+                }
+            }
+            public void write(byte[] data)
+            {
+                foreach (byte by in data)
+                {
+                    write(by);
+                }
+            }
+            public byte getResult()
+            {
+                return refout ? BitReverse(result) : result;
+            }
+        }
+        public class FRAME
+        {
+            private static byte HEAD = 0x5a;
+            private static byte TAIL = 0x0a;
             public byte head;
             public UInt16 id;
             public byte data_type;
             public byte[] data;
             public byte crc;
+            public byte tail;
+            public int Size()
+            {
+                return 6 + data.Length;
+            }
+            public byte[] toBytes()
+            {
+                byte[] bytes = new byte[Size()];
+                int index = 0;
+                bytes[index++] = head;
+                bytes[index++] = (byte)(id & 0xff);
+                bytes[index++] = (byte)((id>>8) & 0xff);
+                for (int i = 0; i < data.Length; i++)
+                {
+                    bytes[index++] = data[i];
+                }
+                bytes[index++] = crc;
+                bytes[index++] = tail;
+                return bytes;
+            }
+            public FRAME()
+            { }
+            public FRAME(UInt16 id, byte data_type, byte[] buff, int start, int len)
+            {
+                head = HEAD;
+                tail = TAIL;
+                this.id = id;
+                this.data_type = data_type;
+                this.crc = 0;
+                switch (data_type)
+                {
+                case 0x40:
+                {
+                    
+                    break;
+                }
+                default:
+                    Array.Copy(buff, start, data, 0, len);
+                    break;
+
+                }
+            }
         }
         public static int FindById(List<ParamItem> list, int id)
         {

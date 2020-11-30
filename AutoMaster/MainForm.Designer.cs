@@ -89,12 +89,25 @@
             this.tabPage4 = new System.Windows.Forms.TabPage();
             this.btnStopSendFile = new System.Windows.Forms.Button();
             this.btnSendFile = new System.Windows.Forms.Button();
+            this.btnSendCmd = new System.Windows.Forms.Button();
             this.btnOpenFile = new System.Windows.Forms.Button();
             this.LabelProgress = new System.Windows.Forms.Label();
             this.LabelProtocol = new System.Windows.Forms.Label();
             this.cbxProtocol = new System.Windows.Forms.ComboBox();
             this.pgrsBarSendPgrs = new System.Windows.Forms.ProgressBar();
             this.textBoxFileName = new System.Windows.Forms.TextBox();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
+            this.btn_eepromParam_save = new System.Windows.Forms.Button();
+            this.btn_eepromParam_stop = new System.Windows.Forms.Button();
+            this.btn_eepromParam_send = new System.Windows.Forms.Button();
+            this.btn_eepromParam_load = new System.Windows.Forms.Button();
+            this.lab_eepromParam_progress = new System.Windows.Forms.Label();
+            this.pb_eepromParam_progress = new System.Windows.Forms.ProgressBar();
+            this.tb_eepromParam_file = new System.Windows.Forms.TextBox();
+            this.dataGridView_paramEEPROM = new System.Windows.Forms.DataGridView();
+            this.dataGridViewTextBoxColumn11 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn12 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn13 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btn_startCom = new System.Windows.Forms.Button();
             this.statusStrip = new System.Windows.Forms.StatusStrip();
             this.statusStrip_Com = new System.Windows.Forms.ToolStripDropDownButton();
@@ -108,7 +121,6 @@
             this.serialPort = new System.IO.Ports.SerialPort(this.components);
             this.openFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.fontDialog = new System.Windows.Forms.FontDialog();
-            this.btnSendCmd = new System.Windows.Forms.Button();
             this.menuStrip.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPageCom.SuspendLayout();
@@ -122,6 +134,8 @@
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_do)).BeginInit();
             this.tabPage4.SuspendLayout();
+            this.tabPage5.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_paramEEPROM)).BeginInit();
             this.statusStrip.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -187,6 +201,7 @@
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage4);
+            this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Location = new System.Drawing.Point(12, 62);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -769,6 +784,18 @@
             this.btnSendFile.UseVisualStyleBackColor = true;
             this.btnSendFile.Click += new System.EventHandler(this.btnSendFile_Click);
             // 
+            // btnSendCmd
+            // 
+            this.btnSendCmd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSendCmd.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btnSendCmd.Location = new System.Drawing.Point(512, 390);
+            this.btnSendCmd.Name = "btnSendCmd";
+            this.btnSendCmd.Size = new System.Drawing.Size(75, 28);
+            this.btnSendCmd.TabIndex = 25;
+            this.btnSendCmd.Text = "发送指令";
+            this.btnSendCmd.UseVisualStyleBackColor = true;
+            this.btnSendCmd.Click += new System.EventHandler(this.btnSendCmd_Click);
+            // 
             // btnOpenFile
             // 
             this.btnOpenFile.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -835,6 +862,144 @@
             this.textBoxFileName.Size = new System.Drawing.Size(420, 21);
             this.textBoxFileName.TabIndex = 18;
             this.textBoxFileName.Text = "请打开文件";
+            // 
+            // tabPage5
+            // 
+            this.tabPage5.Controls.Add(this.btn_eepromParam_save);
+            this.tabPage5.Controls.Add(this.btn_eepromParam_stop);
+            this.tabPage5.Controls.Add(this.btn_eepromParam_send);
+            this.tabPage5.Controls.Add(this.btn_eepromParam_load);
+            this.tabPage5.Controls.Add(this.lab_eepromParam_progress);
+            this.tabPage5.Controls.Add(this.pb_eepromParam_progress);
+            this.tabPage5.Controls.Add(this.tb_eepromParam_file);
+            this.tabPage5.Controls.Add(this.dataGridView_paramEEPROM);
+            this.tabPage5.Location = new System.Drawing.Point(4, 22);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Size = new System.Drawing.Size(752, 447);
+            this.tabPage5.TabIndex = 6;
+            this.tabPage5.Text = "参数配置";
+            this.tabPage5.UseVisualStyleBackColor = true;
+            // 
+            // btn_eepromParam_save
+            // 
+            this.btn_eepromParam_save.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_eepromParam_save.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btn_eepromParam_save.Location = new System.Drawing.Point(674, 382);
+            this.btn_eepromParam_save.Name = "btn_eepromParam_save";
+            this.btn_eepromParam_save.Size = new System.Drawing.Size(75, 28);
+            this.btn_eepromParam_save.TabIndex = 36;
+            this.btn_eepromParam_save.Text = "保存参数";
+            this.btn_eepromParam_save.UseVisualStyleBackColor = true;
+            this.btn_eepromParam_save.Click += new System.EventHandler(this.btn_eeprom_param_Click);
+            // 
+            // btn_eepromParam_stop
+            // 
+            this.btn_eepromParam_stop.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_eepromParam_stop.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btn_eepromParam_stop.Location = new System.Drawing.Point(674, 416);
+            this.btn_eepromParam_stop.Name = "btn_eepromParam_stop";
+            this.btn_eepromParam_stop.Size = new System.Drawing.Size(75, 28);
+            this.btn_eepromParam_stop.TabIndex = 33;
+            this.btn_eepromParam_stop.Text = "停止发送";
+            this.btn_eepromParam_stop.UseVisualStyleBackColor = true;
+            this.btn_eepromParam_stop.Click += new System.EventHandler(this.btn_eeprom_param_Click);
+            // 
+            // btn_eepromParam_send
+            // 
+            this.btn_eepromParam_send.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_eepromParam_send.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btn_eepromParam_send.Location = new System.Drawing.Point(593, 416);
+            this.btn_eepromParam_send.Name = "btn_eepromParam_send";
+            this.btn_eepromParam_send.Size = new System.Drawing.Size(75, 28);
+            this.btn_eepromParam_send.TabIndex = 32;
+            this.btn_eepromParam_send.Text = "发送参数";
+            this.btn_eepromParam_send.UseVisualStyleBackColor = true;
+            this.btn_eepromParam_send.Click += new System.EventHandler(this.btn_eeprom_param_Click);
+            // 
+            // btn_eepromParam_load
+            // 
+            this.btn_eepromParam_load.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.btn_eepromParam_load.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
+            this.btn_eepromParam_load.Location = new System.Drawing.Point(593, 382);
+            this.btn_eepromParam_load.Name = "btn_eepromParam_load";
+            this.btn_eepromParam_load.Size = new System.Drawing.Size(75, 28);
+            this.btn_eepromParam_load.TabIndex = 31;
+            this.btn_eepromParam_load.Text = "加载参数";
+            this.btn_eepromParam_load.UseVisualStyleBackColor = true;
+            this.btn_eepromParam_load.Click += new System.EventHandler(this.btn_eeprom_param_Click);
+            // 
+            // lab_eepromParam_progress
+            // 
+            this.lab_eepromParam_progress.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.lab_eepromParam_progress.Location = new System.Drawing.Point(558, 424);
+            this.lab_eepromParam_progress.Name = "lab_eepromParam_progress";
+            this.lab_eepromParam_progress.RightToLeft = System.Windows.Forms.RightToLeft.No;
+            this.lab_eepromParam_progress.Size = new System.Drawing.Size(29, 12);
+            this.lab_eepromParam_progress.TabIndex = 35;
+            this.lab_eepromParam_progress.Text = "0%";
+            this.lab_eepromParam_progress.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // pb_eepromParam_progress
+            // 
+            this.pb_eepromParam_progress.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pb_eepromParam_progress.Location = new System.Drawing.Point(4, 420);
+            this.pb_eepromParam_progress.Name = "pb_eepromParam_progress";
+            this.pb_eepromParam_progress.Size = new System.Drawing.Size(548, 21);
+            this.pb_eepromParam_progress.Step = 1;
+            this.pb_eepromParam_progress.TabIndex = 34;
+            // 
+            // tb_eepromParam_file
+            // 
+            this.tb_eepromParam_file.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.tb_eepromParam_file.Location = new System.Drawing.Point(4, 386);
+            this.tb_eepromParam_file.Name = "tb_eepromParam_file";
+            this.tb_eepromParam_file.ReadOnly = true;
+            this.tb_eepromParam_file.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.tb_eepromParam_file.Size = new System.Drawing.Size(583, 21);
+            this.tb_eepromParam_file.TabIndex = 30;
+            this.tb_eepromParam_file.Text = "请打开文件";
+            // 
+            // dataGridView_paramEEPROM
+            // 
+            this.dataGridView_paramEEPROM.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.dataGridView_paramEEPROM.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView_paramEEPROM.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn11,
+            this.dataGridViewTextBoxColumn12,
+            this.dataGridViewTextBoxColumn13});
+            this.dataGridView_paramEEPROM.Location = new System.Drawing.Point(4, 3);
+            this.dataGridView_paramEEPROM.Name = "dataGridView_paramEEPROM";
+            this.dataGridView_paramEEPROM.RowTemplate.Height = 23;
+            this.dataGridView_paramEEPROM.Size = new System.Drawing.Size(745, 373);
+            this.dataGridView_paramEEPROM.TabIndex = 3;
+            this.dataGridView_paramEEPROM.CellEndEdit += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgv_eepromParam_CellEndEdit);
+            // 
+            // dataGridViewTextBoxColumn11
+            // 
+            this.dataGridViewTextBoxColumn11.HeaderText = "序号";
+            this.dataGridViewTextBoxColumn11.Name = "dataGridViewTextBoxColumn11";
+            this.dataGridViewTextBoxColumn11.ReadOnly = true;
+            this.dataGridViewTextBoxColumn11.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.dataGridViewTextBoxColumn11.Width = 60;
+            // 
+            // dataGridViewTextBoxColumn12
+            // 
+            this.dataGridViewTextBoxColumn12.HeaderText = "名字";
+            this.dataGridViewTextBoxColumn12.Name = "dataGridViewTextBoxColumn12";
+            this.dataGridViewTextBoxColumn12.ReadOnly = true;
+            this.dataGridViewTextBoxColumn12.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.dataGridViewTextBoxColumn12.Width = 200;
+            // 
+            // dataGridViewTextBoxColumn13
+            // 
+            this.dataGridViewTextBoxColumn13.HeaderText = "值";
+            this.dataGridViewTextBoxColumn13.Name = "dataGridViewTextBoxColumn13";
+            this.dataGridViewTextBoxColumn13.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.NotSortable;
+            this.dataGridViewTextBoxColumn13.Width = 80;
             // 
             // btn_startCom
             // 
@@ -945,18 +1110,6 @@
             this.openFileDialog.FileName = "*.log";
             this.openFileDialog.Filter = "log files|*.log|All files|*.*";
             // 
-            // btnSendCmd
-            // 
-            this.btnSendCmd.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSendCmd.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
-            this.btnSendCmd.Location = new System.Drawing.Point(512, 390);
-            this.btnSendCmd.Name = "btnSendCmd";
-            this.btnSendCmd.Size = new System.Drawing.Size(75, 28);
-            this.btnSendCmd.TabIndex = 25;
-            this.btnSendCmd.Text = "发送指令";
-            this.btnSendCmd.UseVisualStyleBackColor = true;
-            this.btnSendCmd.Click += new System.EventHandler(this.btnSendCmd_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -990,6 +1143,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_do)).EndInit();
             this.tabPage4.ResumeLayout(false);
             this.tabPage4.PerformLayout();
+            this.tabPage5.ResumeLayout(false);
+            this.tabPage5.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView_paramEEPROM)).EndInit();
             this.statusStrip.ResumeLayout(false);
             this.statusStrip.PerformLayout();
             this.ResumeLayout(false);
@@ -1078,6 +1234,18 @@
         private System.Windows.Forms.ProgressBar pgrsBarSendPgrs;
         private System.Windows.Forms.TextBox textBoxFileName;
         private System.Windows.Forms.Button btnSendCmd;
+        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.DataGridView dataGridView_paramEEPROM;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn11;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn12;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn13;
+        private System.Windows.Forms.Button btn_eepromParam_stop;
+        private System.Windows.Forms.Button btn_eepromParam_send;
+        private System.Windows.Forms.Button btn_eepromParam_load;
+        private System.Windows.Forms.Label lab_eepromParam_progress;
+        private System.Windows.Forms.ProgressBar pb_eepromParam_progress;
+        private System.Windows.Forms.TextBox tb_eepromParam_file;
+        private System.Windows.Forms.Button btn_eepromParam_save;
     }
 }
 

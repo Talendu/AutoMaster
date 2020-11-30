@@ -15,6 +15,7 @@ using System.Threading;
 using System.Configuration;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Xml;
 
 namespace AutoMaster
 {
@@ -31,9 +32,15 @@ namespace AutoMaster
         ConfigInfo.ConfigInNvm configInNvm;
 
         List<ParamList.ParamItem> paramList;
+        List<IItem> paramEEPROM = new List<IItem>();
         Thread RegularSendThread = null;
         Thread UpdateUiThread = null;
         Thread myReaderThread = null;
+
+        Thread myEepromParamSendThread = null;
+        bool eepromParamSending = false;
+        byte[] eepromParamBuff = null;
+
         AutoResetEvent myResetEvent;
         Semaphore sem;
         Semaphore sem_append;
@@ -82,7 +89,13 @@ namespace AutoMaster
             serialPort.ReadTimeout = 1000000 / serialPort.BaudRate;
 
             paramList = ParamList.ParamList_Init();
-            int i;
+            dataGridView_paramEEPROM.AllowUserToAddRows = false;
+            dataGridView_paramEEPROM.AllowUserToDeleteRows = false;
+
+            /* 添加参数显示页面 */
+            DataGridViewRow row;
+            DataGridViewTextBoxCell cell;
+            int i = 0;
             for (i = 0; i < paramList.Count; i++)
             {
                 DataGridView grid;
@@ -110,8 +123,8 @@ namespace AutoMaster
                 listItem.SubItems.Add(new ListViewItem.ListViewSubItem().Text = item.unit);
                 listItem.SubItems.Add(new ListViewItem.ListViewSubItem().Text = item.description);
                 listView_State.Items.Add(listItem);
-                DataGridViewRow row = new DataGridViewRow();
-                DataGridViewTextBoxCell cell = new DataGridViewTextBoxCell();
+                row = new DataGridViewRow();
+                cell = new DataGridViewTextBoxCell();
                 cell.Value = item.id.ToString();
                 row.Cells.Add(cell);
                 cell = new DataGridViewTextBoxCell();
@@ -166,21 +179,16 @@ namespace AutoMaster
             listView_State.Columns[0].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
             listView_State.Columns[0].TextAlign = HorizontalAlignment.Center;
             listView_State.Columns[1].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
-            //listView_State.Columns[1].TextAlign = HorizontalAlignment.Center;
-            //listView_State.Columns[2].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
             listView_State.Columns[2].TextAlign = HorizontalAlignment.Center;
             listView_State.Columns[3].AutoResize(ColumnHeaderAutoResizeStyle.HeaderSize);
             listView_State.Columns[3].TextAlign = HorizontalAlignment.Center;
             listView_State.Columns[4].AutoResize(ColumnHeaderAutoResizeStyle.ColumnContent);
-            //listView_State.Columns[4].TextAlign = HorizontalAlignment.Center;
             serialPort.DataReceived += new SerialDataReceivedEventHandler(serialDataReceive);
             ReceivedHandlers.Add(serialDataReceive);
-
-
+            
             dataGridView_di.AllowUserToAddRows = false;
             dataGridView_di.AllowUserToDeleteRows = false;
-
-
+            
             dataGridView_do.AllowUserToAddRows = false;
             dataGridView_do.AllowUserToDeleteRows = false;
 
@@ -198,6 +206,7 @@ namespace AutoMaster
             sem = new Semaphore(1, 1);
             sem_append = new Semaphore(1, 1);
             //myReaderThread.Start();
+
         }
 
         void updateUiMethod()
@@ -432,6 +441,27 @@ namespace AutoMaster
             Byte[] Buff = new Byte[(data.Length + 1) / 2 + 2];
             int Len = 0;
             Len = hex2num(data, Buff);
+
+            if (checkBoxSendNewLine.CheckState == CheckState.Checked)
+            {
+                Buff[Len++] = (byte)'\r';
+                Buff[Len++] = (byte)'\n';
+            }
+
+            TransmissionCount += Len;
+            serialPort.Write(Buff, 0, Len);
+            if (checkBoxShowSend.CheckState == CheckState.Checked)
+            {
+                MyMessage msg = new MyMessage(MyMessage.MSG_TX);
+                msg.SetObj(data);
+                ShowMessage(msg);
+            }
+        }
+
+        private void serialBytesTransmission(byte[] data)
+        {
+            Byte[] Buff = new Byte[data.Length + 2];
+            int Len = data.Length;
 
             if (checkBoxSendNewLine.CheckState == CheckState.Checked)
             {
@@ -1582,5 +1612,152 @@ namespace AutoMaster
                 this.tabPage4.Controls.Add(this.tbxData);
             }
         }
+
+        /* EEPROM 参数配置页面按钮处理事件 */
+        private void btn_eeprom_param_Click(object sender, EventArgs e)
+        {
+            if (sender == btn_eepromParam_load)
+            {
+                string fileName;
+                OpenFileDialog openFileDialog = new OpenFileDialog();
+                openFileDialog.InitialDirectory = Application.StartupPath;
+                openFileDialog.Filter = "xml|*.xml*|所有文件|*.*";
+                openFileDialog.RestoreDirectory = true;
+                openFileDialog.FilterIndex = 1;
+                if (openFileDialog.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+                fileName = openFileDialog.FileName;
+                tb_eepromParam_file.Text = fileName;
+                dataGridView_paramEEPROM.Rows.Clear();
+                paramEEPROM.Clear();
+                ParamEEPROM.ParamItem_GetFromXml(paramEEPROM, fileName);
+                DataGridViewRow row;
+                DataGridViewTextBoxCell cell;
+                int i = 0;
+                /* 添加EEPROM配置页信息 */
+                foreach (IItem item in paramEEPROM)
+                {
+                    row = new DataGridViewRow();
+                    switch (item.type)
+                    {
+                        case IItem.type_t.group:
+                            {
+                                ParamsEEPROM.Group group = (ParamsEEPROM.Group)item;
+                                string name = "";
+                                cell = new DataGridViewTextBoxCell();
+                                cell.Value = "";
+                                row.Cells.Add(cell);
+                                cell = new DataGridViewTextBoxCell();
+                                for (int j = 0; j < group.depth; j++)
+                                {
+                                    name += "    ";
+                                }
+                                cell.Value = name + "▶ " + group.name;
+                                row.Cells.Add(cell);
+                                dataGridView_paramEEPROM.Rows.Add(row);
+                                dataGridView_paramEEPROM.Rows[i].Cells[2].ReadOnly = true;
+                                break;
+                            }
+                        case IItem.type_t.entry:
+                            {
+                                ParamsEEPROM.Entry entry = (ParamsEEPROM.Entry)item;
+                                string name = "";
+                                cell = new DataGridViewTextBoxCell();
+                                cell.Value = entry.offset;
+                                row.Cells.Add(cell);
+                                cell = new DataGridViewTextBoxCell();
+                                for (int j = 0; j < entry.depth; j++)
+                                {
+                                    name += "    ";
+                                }
+                                cell.Value = name + "|- " + entry.name;
+                                row.Cells.Add(cell);
+                                cell = new DataGridViewTextBoxCell();
+                                cell.Value = entry.value;
+                                row.Cells.Add(cell);
+                                dataGridView_paramEEPROM.Rows.Add(row);
+                                break;
+                            }
+                        default:
+                            dataGridView_paramEEPROM.Rows.Add(row);
+                            break;
+                    }
+                    i++;
+                }
+            }
+            else if (sender == btn_eepromParam_save)
+            {
+                string fileName;
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                saveFileDialog.InitialDirectory = Application.StartupPath;
+                saveFileDialog.Filter = "xml|*.xml*|所有文件|*.*";
+                saveFileDialog.RestoreDirectory = true;
+                saveFileDialog.FilterIndex = 1;
+                if (saveFileDialog.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+                fileName = saveFileDialog.FileName;
+                tb_eepromParam_file.Text = fileName;
+                ParamEEPROM.ParamItem_SaveXml(paramEEPROM, fileName);
+            }
+            else if (sender == btn_eepromParam_send)
+            {
+                eepromParamBuff = ParamEEPROM.toBuffer(paramEEPROM);
+                if (myEepromParamSendThread == null || myEepromParamSendThread.ThreadState == ThreadState.Stopped)
+                {
+                    myEepromParamSendThread = new Thread(new ThreadStart(eepromSendMethod));
+                    myEepromParamSendThread.Start();
+                }
+                foreach(byte value in eepromParamBuff)
+                {
+                    tbxData.AppendText(value.ToString());
+                }
+            }
+            else if (sender == btn_eepromParam_stop)
+            {
+
+            }
+        }
+
+        private void dgv_eepromParam_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            DataGridView view = (DataGridView)sender;
+            try
+            {
+                ((ParamsEEPROM.Entry)paramEEPROM[e.RowIndex]).value = (string)view.Rows[e.RowIndex].Cells[2].Value;
+            }
+            catch (Exception) { }
+        }
+        private void sendFrame(ParamList.FRAME frame)
+        {
+            byte[] buffer = new byte[frame.Size()];
+
+
+            serialBytesTransmission(buffer);
+        }
+        private void eepromSendMethod()
+        {
+            int index;
+            int size = eepromParamBuff.Length;
+            int frame_byte_max = 128;
+            int len;
+            for (index = 0; index < size;)
+            {
+                if (index + frame_byte_max >= size)
+                {
+                    len = frame_byte_max;
+                }
+                else
+                {
+                    len = size - index;
+                }
+                serialBytesTransmission(new ParamList.FRAME(0x400, 0x40, eepromParamBuff, index, len).toBytes());
+                index += len;
+            }
+        }
+
     }
 }
